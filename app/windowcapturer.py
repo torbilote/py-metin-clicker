@@ -4,7 +4,7 @@ from typing import Optional
 from numpy.typing import NDArray
 
 
-class WindowCapture:
+class WindowCapturer:
 
     def __init__(self, window_name: Optional[str] = None) -> None:
 
