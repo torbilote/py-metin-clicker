@@ -128,3 +128,7 @@ class HsvFilter:
             c[c <= lim] = 0
             c[c > lim] -= amount
         return c
+    
+    @hsv_parameters.setter
+    def hsv_parameters(self, value: dict) -> None:
+        self.hsv_parameters = value

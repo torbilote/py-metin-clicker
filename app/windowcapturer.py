@@ -1,12 +1,11 @@
 import numpy as np
 import win32gui, win32ui, win32con
-from typing import Optional
 from numpy.typing import NDArray
 
 
 class WindowCapturer:
 
-    def __init__(self, window_name: Optional[str] = None) -> None:
+    def __init__(self, window_name: str, window_borders_offset: int, window_titlebar_offset: int) -> None:
 
         self.window_width: int = 0 # in pixels
         self.window_height: int = 0 # in pixels
@@ -16,8 +15,8 @@ class WindowCapturer:
         self.full_offset_from_left: int = 0 # the distance from the left of the full screen up to the of the window + the distance of window offset from left
         self.full_offset_from_top: int = 0
 
-        border_pixels = 8 # left, right, bottom
-        titlebar_pixels = 30 # top
+        # window_borders_offset = left, right, bottom
+        # window_titlebar_offset = top
 
         # find the handle for the window we want to capture.
         # if no window name is given, capture the entire screen
@@ -34,11 +33,11 @@ class WindowCapturer:
         self.window_height = window_sides[3] - window_sides[1]
 
         # account for the window border and titlebar and cut them off
-        self.window_width = self.window_width - (border_pixels * 2)
-        self.window_height = self.window_height - titlebar_pixels - border_pixels
+        self.window_width = self.window_width - (window_borders_offset * 2)
+        self.window_height = self.window_height - window_titlebar_offset - window_borders_offset
 
-        self.window_offset_from_left = border_pixels
-        self.window_offset_from_top = titlebar_pixels
+        self.window_offset_from_left = window_borders_offset
+        self.window_offset_from_top = window_titlebar_offset
 
         # set the cropped coordinates offset so we can translate screenshot
         # images into actual screen positions

@@ -25,45 +25,41 @@ class Finder:
                 "height": template.shape[0],
             }
     
-    def find_images(self, template_names: list[str], base_image: NDArray|MatLike, threshold: float = 0.5, max_results_per_image: int = 3) -> dict[str,Sequence[Rect]]:
-        results = dict()
-        for template_name in template_names:
-            # run the OpenCV algorithm
-            result_of_finding = cv.matchTemplate(base_image, self.templates[template_name]['template'], self.method)
+    def find_template(self, template_name: str, base_image: NDArray|MatLike, threshold: float = 0.5, max_results_per_image: int = 3) -> Sequence[Rect]:
+        # run the OpenCV algorithm
+        result_of_finding = cv.matchTemplate(base_image, self.templates[template_name]['template'], self.method)
 
-            # Get the all the positions from the match result that exceed our threshold
-            locations = np.where(result_of_finding >= threshold)
-            locations = list(zip(*locations[::-1]))
+        # Get the all the positions from the match result that exceed our threshold
+        locations = np.where(result_of_finding >= threshold)
+        locations = list(zip(*locations[::-1]))
 
-            # if we found no results, return now. this reshape of the empty array allows us to 
-            # concatenate together results without causing an error
-            if not locations:
-                results[template_name] = []
+        # if we found no results, return now. this reshape of the empty array allows us to 
+        # concatenate together results without causing an error
+        if not locations:
+            return []
 
-            # You'll notice a lot of overlapping rectangles get drawn. We can eliminate those redundant
-            # locations by using groupRectangles().
-            # First we need to create the list of [x, y, w, h] rectangles
-            rectangles = list()
-            for loc in locations:
-                rect = [int(loc[0]), int(loc[1]), self.templates[template_name]['width'], self.templates[template_name]['height']]
-                # Add every box to the list twice in order to retain single (non-overlapping) boxes
-                rectangles.append(rect)
-                rectangles.append(rect)
+        # You'll notice a lot of overlapping rectangles get drawn. We can eliminate those redundant
+        # locations by using groupRectangles().
+        # First we need to create the list of [x, y, w, h] rectangles
+        rectangles = list()
+        for loc in locations:
+            rect = [int(loc[0]), int(loc[1]), self.templates[template_name]['width'], self.templates[template_name]['height']]
+            # Add every box to the list twice in order to retain single (non-overlapping) boxes
+            rectangles.append(rect)
+            rectangles.append(rect)
 
-            # Apply group rectangles.
-            # The groupThreshold parameter should usually be 1. If you put it at 0 then no grouping is
-            # done. If you put it at 2 then an object needs at least 3 overlapping rectangles to appear
-            # in the result. I've set eps to 0.5, which is:
-            # "Relative difference between sides of the rectangles to merge them into a group."
-            rectangles, weights = cv.groupRectangles(rectangles, groupThreshold=1, eps=0.5)
+        # Apply group rectangles.
+        # The groupThreshold parameter should usually be 1. If you put it at 0 then no grouping is
+        # done. If you put it at 2 then an object needs at least 3 overlapping rectangles to appear
+        # in the result. I've set eps to 0.5, which is:
+        # "Relative difference between sides of the rectangles to merge them into a group."
+        rectangles, weights = cv.groupRectangles(rectangles, groupThreshold=1, eps=0.5)
 
-            # for performance reasons, return a limited number of results.
-            # these aren't necessarily the best results.
-            if len(rectangles) > max_results_per_image:
-                rectangles = rectangles[:max_results_per_image]
+        # for performance reasons, return a limited number of results.
+        # these aren't necessarily the best results.
+        if len(rectangles) > max_results_per_image:
+            rectangles = rectangles[:max_results_per_image]
 
-            results[template_name] = rectangles
-
-        return results
+        return rectangles
 
 
