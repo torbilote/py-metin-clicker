@@ -1,6 +1,6 @@
 import cv2 as cv
 import numpy as np
-from typing import Sequence
+from typing import Sequence, Optional
 from numpy.typing import NDArray
 from cv2.typing import MatLike
 
@@ -9,32 +9,25 @@ class HsvFilter:
 
     def __init__(
             self,
+            hsv_parameters: dict[str, int],
             gui: bool = False,
-            hMin: int = 0,
-            sMin: int = 0,
-            vMin: int = 0,
-            hMax: int = 179,
-            sMax: int = 255,
-            vMax: int = 255,
-            sAdd: int = 0,
-            sSub: int = 0,
-            vAdd: int = 0,
-            vSub: int = 0,
         ) -> None:
 
         self.TRACKBAR_WINDOW = "Trackbars"
-
         self.gui = gui
-        self.hMin = hMin
-        self.sMin = sMin
-        self.vMin = vMin
-        self.hMax = hMax
-        self.sMax = sMax
-        self.vMax = vMax
-        self.sAdd = sAdd
-        self.sSub = sSub
-        self.vAdd = vAdd
-        self.vSub = vSub
+        
+        self.hsv_parameters = {
+            "hMin": hsv_parameters.get('hMin', 0),
+            "sMin": hsv_parameters.get('sMin', 0),
+            "vMin": hsv_parameters.get('vMin', 0),
+            "hMax": hsv_parameters.get('hMax', 179),
+            "sMax": hsv_parameters.get('sMax', 255),
+            "vMax": hsv_parameters.get('vMax', 255),
+            "sAdd": hsv_parameters.get('sAdd', 0),
+            "sSub": hsv_parameters.get('sSub', 0),
+            "vAdd": hsv_parameters.get('vAdd', 0),
+            "vSub": hsv_parameters.get('vSub', 0),
+            }
 
         if self.gui:
             self._create_control_gui()
@@ -61,17 +54,17 @@ class HsvFilter:
         cv.createTrackbar('VSub', self.TRACKBAR_WINDOW, 0, 255, self._empty_callback)
 
         # Set default value for Max HSV trackbars
-        cv.setTrackbarPos('HMin', self.TRACKBAR_WINDOW, self.hMin)
-        cv.setTrackbarPos('HMax', self.TRACKBAR_WINDOW, self.hMax)
-        cv.setTrackbarPos('SMin', self.TRACKBAR_WINDOW, self.sMin)
-        cv.setTrackbarPos('SMax', self.TRACKBAR_WINDOW, self.sMax)
-        cv.setTrackbarPos('VMin', self.TRACKBAR_WINDOW, self.vMin)
-        cv.setTrackbarPos('VMax', self.TRACKBAR_WINDOW, self.vMax)
+        cv.setTrackbarPos('HMin', self.TRACKBAR_WINDOW, self.hsv_parameters['hMin'])
+        cv.setTrackbarPos('HMax', self.TRACKBAR_WINDOW, self.hsv_parameters['hMax'])
+        cv.setTrackbarPos('SMin', self.TRACKBAR_WINDOW, self.hsv_parameters['sMin'])
+        cv.setTrackbarPos('SMax', self.TRACKBAR_WINDOW, self.hsv_parameters['sMax'])
+        cv.setTrackbarPos('VMin', self.TRACKBAR_WINDOW, self.hsv_parameters['vMin'])
+        cv.setTrackbarPos('VMax', self.TRACKBAR_WINDOW, self.hsv_parameters['vMax'])
 
-        cv.setTrackbarPos('SAdd', self.TRACKBAR_WINDOW, self.sAdd)
-        cv.setTrackbarPos('SSub', self.TRACKBAR_WINDOW, self.sSub)
-        cv.setTrackbarPos('VAdd', self.TRACKBAR_WINDOW, self.vAdd)
-        cv.setTrackbarPos('VSub', self.TRACKBAR_WINDOW, self.vSub)
+        cv.setTrackbarPos('SAdd', self.TRACKBAR_WINDOW, self.hsv_parameters['sAdd'])
+        cv.setTrackbarPos('SSub', self.TRACKBAR_WINDOW, self.hsv_parameters['sSub'])
+        cv.setTrackbarPos('VAdd', self.TRACKBAR_WINDOW, self.hsv_parameters['vAdd'])
+        cv.setTrackbarPos('VSub', self.TRACKBAR_WINDOW, self.hsv_parameters['vSub'])
 
     # required callback. we'll be using getTrackbarPos() to do lookups
     # instead of using the callback.
@@ -80,16 +73,16 @@ class HsvFilter:
     
     def _get_hsv_filter_from_controls(self) -> None:
         # Get current positions of all trackbars
-        self.hMin = cv.getTrackbarPos('HMin', self.TRACKBAR_WINDOW)
-        self.sMin = cv.getTrackbarPos('SMin', self.TRACKBAR_WINDOW)
-        self.vMin = cv.getTrackbarPos('VMin', self.TRACKBAR_WINDOW)
-        self.hMax = cv.getTrackbarPos('HMax', self.TRACKBAR_WINDOW)
-        self.sMax = cv.getTrackbarPos('SMax', self.TRACKBAR_WINDOW)
-        self.vMax = cv.getTrackbarPos('VMax', self.TRACKBAR_WINDOW)
-        self.sAdd = cv.getTrackbarPos('SAdd', self.TRACKBAR_WINDOW)
-        self.sSub = cv.getTrackbarPos('SSub', self.TRACKBAR_WINDOW)
-        self.vAdd = cv.getTrackbarPos('VAdd', self.TRACKBAR_WINDOW)
-        self.vSub = cv.getTrackbarPos('VSub', self.TRACKBAR_WINDOW)
+        self.hsv_parameters['hMin'] = cv.getTrackbarPos('HMin', self.TRACKBAR_WINDOW)
+        self.hsv_parameters['sMin'] = cv.getTrackbarPos('SMin', self.TRACKBAR_WINDOW)
+        self.hsv_parameters['vMin'] = cv.getTrackbarPos('VMin', self.TRACKBAR_WINDOW)
+        self.hsv_parameters['hMax'] = cv.getTrackbarPos('HMax', self.TRACKBAR_WINDOW)
+        self.hsv_parameters['sMax'] = cv.getTrackbarPos('SMax', self.TRACKBAR_WINDOW)
+        self.hsv_parameters['vMax'] = cv.getTrackbarPos('VMax', self.TRACKBAR_WINDOW)
+        self.hsv_parameters['sAdd'] = cv.getTrackbarPos('SAdd', self.TRACKBAR_WINDOW)
+        self.hsv_parameters['sSub'] = cv.getTrackbarPos('SSub', self.TRACKBAR_WINDOW)
+        self.hsv_parameters['vAdd'] = cv.getTrackbarPos('VAdd', self.TRACKBAR_WINDOW)
+        self.hsv_parameters['vSub'] = cv.getTrackbarPos('VSub', self.TRACKBAR_WINDOW)
     
     # given an image and an HSV filter, apply the filter and return the resulting image.
     # if a filter is not supplied, the control GUI trackbars will be used
@@ -103,15 +96,15 @@ class HsvFilter:
 
         # add/subtract saturation and value
         h, s, v = cv.split(hsv_image)
-        s = self._shift_channel(s, self.sAdd)
-        s = self._shift_channel(s, -self.sSub)
-        v = self._shift_channel(v, self.vAdd)
-        v = self._shift_channel(v, -self.vSub)
+        s = self._shift_channel(s, self.hsv_parameters['sAdd'])
+        s = self._shift_channel(s, -self.hsv_parameters['sSub'])
+        v = self._shift_channel(v, self.hsv_parameters['vAdd'])
+        v = self._shift_channel(v, -self.hsv_parameters['vSub'])
         hsv = cv.merge([h, s, v])
 
         # Set minimum and maximum HSV values to display
-        lower = np.array([self.hMin, self.sMin, self.vMin])
-        upper = np.array([self.hMax, self.sMax, self.vMax])
+        lower = np.array([self.hsv_parameters['hMin'], self.hsv_parameters['sMin'], self.hsv_parameters['vMin']])
+        upper = np.array([self.hsv_parameters['hMax'], self.hsv_parameters['sMax'], self.hsv_parameters['vMax']])
 
         # Apply the thresholds
         mask = cv.inRange(hsv, lower, upper)

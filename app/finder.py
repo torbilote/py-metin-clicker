@@ -6,30 +6,30 @@ from typing import Optional, Sequence
 
 class Finder:
     # constructor
-    def __init__(self, templates_paths: list[str], method: int = cv.TM_CCOEFF_NORMED) -> None:
+    def __init__(self, templates: dict[str, str]) -> None:
         # There are 6 methods to choose from:
         # TM_CCOEFF, TM_CCOEFF_NORMED, TM_CCORR, TM_CCORR_NORMED, TM_SQDIFF, TM_SQDIFF_NORMED
-        self.method = method
-        self.templates = list()
-        for template_path in templates_paths:
+        self.method = cv.TM_CCOEFF_NORMED
+        self.templates = dict()
+
+        for template_name, template_path in templates.items():
             # load the image we're trying to match
             # https://docs.opencv.org/4.2.0/d4/da8/group__imgcodecs.html
             # image = cv.imread(image_path, cv.IMREAD_UNCHANGED)
             template = cv.imread(template_path, cv.IMREAD_UNCHANGED)
 
             # Save the dimensions of the image       
-            self.templates.append({
+            self.templates[template_name] = {
                 "template": template,
                 "width": template.shape[1],
                 "height": template.shape[0],
-                "path": template_path,
-            })
+            }
     
-    def find_images(self, base_image: NDArray|MatLike, threshold: float = 0.5, max_results_per_image: int = 3) -> dict[str,Sequence[Rect]]:
+    def find_images(self, template_names: list[str], base_image: NDArray|MatLike, threshold: float = 0.5, max_results_per_image: int = 3) -> dict[str,Sequence[Rect]]:
         results = dict()
-        for template in self.templates:
+        for template_name in template_names:
             # run the OpenCV algorithm
-            result_of_finding = cv.matchTemplate(base_image, template['template'], self.method)
+            result_of_finding = cv.matchTemplate(base_image, self.templates[template_name]['template'], self.method)
 
             # Get the all the positions from the match result that exceed our threshold
             locations = np.where(result_of_finding >= threshold)
@@ -38,14 +38,14 @@ class Finder:
             # if we found no results, return now. this reshape of the empty array allows us to 
             # concatenate together results without causing an error
             if not locations:
-                continue
+                results[template_name] = []
 
             # You'll notice a lot of overlapping rectangles get drawn. We can eliminate those redundant
             # locations by using groupRectangles().
             # First we need to create the list of [x, y, w, h] rectangles
             rectangles = list()
             for loc in locations:
-                rect = [int(loc[0]), int(loc[1]), template['width'], template['height']]
+                rect = [int(loc[0]), int(loc[1]), self.templates[template_name]['width'], self.templates[template_name]['height']]
                 # Add every box to the list twice in order to retain single (non-overlapping) boxes
                 rectangles.append(rect)
                 rectangles.append(rect)
@@ -62,7 +62,7 @@ class Finder:
             if len(rectangles) > max_results_per_image:
                 rectangles = rectangles[:max_results_per_image]
 
-            results[template['path']] = rectangles
+            results[template_name] = rectangles
 
         return results
 
