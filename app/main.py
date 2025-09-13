@@ -15,6 +15,7 @@ from cv2.typing import Rect
 from typing import Sequence
 from numpy.typing import NDArray
 from cv2.typing import MatLike
+from typing import Optional
 
 DEBUG_MODE = True
 
@@ -27,7 +28,7 @@ HSV_PARAMETERS = {
     "arrow_purple"  : {"hMin": 0, "sMin": 0, "vMin": 63, "hMax": 179, "sMax": 200, "vMax": 255, "sAdd": 0, "sSub": 0, "vAdd": 0, "vSub": 12}, # TODO to configure
     "arrow_yellow"  : {"hMin": 0, "sMin": 0, "vMin": 63, "hMax": 179, "sMax": 200, "vMax": 255, "sAdd": 0, "sSub": 0, "vAdd": 0, "vSub": 12}, # TODO to configure
     "fishing_rod"   : {"hMin": 0, "sMin": 0, "vMin": 63, "hMax": 179, "sMax": 200, "vMax": 255, "sAdd": 0, "sSub": 0, "vAdd": 0, "vSub": 12}, # TODO to configure
-    "icon"          : {"hMin": 0, "sMin": 0, "vMin": 63, "hMax": 179, "sMax": 200, "vMax": 255, "sAdd": 0, "sSub": 0, "vAdd": 0, "vSub": 12}, # TODO to configure
+    "icon"          : {"hMin": 0, "sMin": 0, "vMin": 103, "hMax": 179, "sMax": 49, "vMax": 255, "sAdd": 0, "sSub": 0, "vAdd": 0, "vSub": 36},
 }
 
 TEMPLATES = {
@@ -43,7 +44,7 @@ THRESHOLDS = {
     "arrow_purple"  : 0.5,
     "arrow_yellow"  : 0.5,
     "fishing_rod"   : 0.5,
-    "icon"          : 0.5,
+    "icon"          : 0.35,
 }
 
 TIME_BEGINNING              = 5                 # seconds
@@ -94,8 +95,12 @@ class Bot:
         self.hsv_filter.hsv_parameters = hsv_parameters
         return self.hsv_filter.apply_hsv_filter(screenshot_raw)
 
-    def find(self, template: str | list[str], threshold: int | list[int], hsv_parameters: dict[str, int] | list[dict[str, int]]) -> dict[str,Sequence[Rect]]:
-        screenshot_raw = self.window_capturer.get_screenshot()
+    def find(self, template: str | list[str], threshold: int | list[int], hsv_parameters: dict[str, int] | list[dict[str, int]], mocked_image_path: Optional[str] = None) -> dict[str,Sequence[Rect]]:
+        if mocked_image_path:
+            screenshot_raw = cv.imread(mocked_image_path, cv.IMREAD_UNCHANGED)
+        else:
+            screenshot_raw = self.window_capturer.get_screenshot()
+        
         results = dict()
 
         if isinstance(template, list) and isinstance(threshold, list) and isinstance(hsv_parameters, list):
@@ -244,9 +249,9 @@ class Bot:
                     logger.debug(f'Didnt find object. Finished step: {step}.')
                     step = Step.STEP_1          
     
-            if cv.waitKey(1) == ord('q'):
-                cv.destroyAllWindows()
-                break
+            # if cv.waitKey(1) == ord('q'):
+            #     cv.destroyAllWindows()
+            #     break
 
 if __name__ == "__main__":
     window_capturer = WindowCapturer(WINDOW_NAME, WINDOW_BORDERS_OFFSET, WINDOW_TITLEBAR_OFFSET)
