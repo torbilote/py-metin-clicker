@@ -61,5 +61,3 @@ class Finder:
             rectangles = rectangles[:max_results_per_image]
 
         return rectangles
-
-

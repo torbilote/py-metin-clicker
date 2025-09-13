@@ -13,20 +13,21 @@ from loguru import logger
 import pydirectinput
 from cv2.typing import Rect
 from typing import Sequence
-
+from numpy.typing import NDArray
+from cv2.typing import MatLike
 
 DEBUG_MODE = True
 
-WINDOW_NAME = 'Mt2009'
-WINDOW_BORDERS_OFFSET = 8 # pixels
-WINDOW_TITLEBAR_OFFSET = 30 # pixels
+WINDOW_NAME             = 'Mt2009'
+WINDOW_BORDERS_OFFSET   = 8         # pixels
+WINDOW_TITLEBAR_OFFSET  = 30        # pixels
 
 HSV_PARAMETERS = {
-    "arrow_blue"    : {"hMin": 0, "sMin": 0, "vMin": 63, "hMax": 179, "sMax": 200, "vMax": 255, "sAdd": 0, "sSub": 0, "vAdd": 0, "vSub": 12},
-    "arrow_purple"  : {"hMin": 0, "sMin": 0, "vMin": 63, "hMax": 179, "sMax": 200, "vMax": 255, "sAdd": 0, "sSub": 0, "vAdd": 0, "vSub": 12},
-    "arrow_yellow"  : {"hMin": 0, "sMin": 0, "vMin": 63, "hMax": 179, "sMax": 200, "vMax": 255, "sAdd": 0, "sSub": 0, "vAdd": 0, "vSub": 12},
-    "fishing_rod"   : {"hMin": 0, "sMin": 0, "vMin": 63, "hMax": 179, "sMax": 200, "vMax": 255, "sAdd": 0, "sSub": 0, "vAdd": 0, "vSub": 12},
-    "icon"          : {"hMin": 0, "sMin": 0, "vMin": 63, "hMax": 179, "sMax": 200, "vMax": 255, "sAdd": 0, "sSub": 0, "vAdd": 0, "vSub": 12},
+    "arrow_blue"    : {"hMin": 0, "sMin": 0, "vMin": 63, "hMax": 179, "sMax": 200, "vMax": 255, "sAdd": 0, "sSub": 0, "vAdd": 0, "vSub": 12}, # TODO to configure
+    "arrow_purple"  : {"hMin": 0, "sMin": 0, "vMin": 63, "hMax": 179, "sMax": 200, "vMax": 255, "sAdd": 0, "sSub": 0, "vAdd": 0, "vSub": 12}, # TODO to configure
+    "arrow_yellow"  : {"hMin": 0, "sMin": 0, "vMin": 63, "hMax": 179, "sMax": 200, "vMax": 255, "sAdd": 0, "sSub": 0, "vAdd": 0, "vSub": 12}, # TODO to configure
+    "fishing_rod"   : {"hMin": 0, "sMin": 0, "vMin": 63, "hMax": 179, "sMax": 200, "vMax": 255, "sAdd": 0, "sSub": 0, "vAdd": 0, "vSub": 12}, # TODO to configure
+    "icon"          : {"hMin": 0, "sMin": 0, "vMin": 63, "hMax": 179, "sMax": 200, "vMax": 255, "sAdd": 0, "sSub": 0, "vAdd": 0, "vSub": 12}, # TODO to configure
 }
 
 TEMPLATES = {
@@ -45,13 +46,13 @@ THRESHOLDS = {
     "icon"          : 0.5,
 }
 
-TIME_BEGINNING              = 5 # seconds
-TIME_AFTER_ICON_APPEARS     = 5 # seconds
-TIME_PAUSE_BEFORE_FISHING   = 5 # seconds
-TIME_FISHING                = 0.4 # seconds
-TIME_FISHING_ARROW_BLUE     = TIME_FISHING * 2 # seconds
-TIME_FISHING_ARROW_PURPLE   = TIME_FISHING / 2 # seconds
-TIME_FISHING_ARROW_YELLOW   = TIME_FISHING / 4 # seconds
+TIME_BEGINNING              = 5                 # seconds
+TIME_AFTER_ICON_APPEARS     = 5                 # seconds
+TIME_PAUSE_BEFORE_FISHING   = 5                 # seconds
+TIME_FISHING                = 0.4               # seconds
+TIME_FISHING_ARROW_BLUE     = TIME_FISHING * 2  # seconds
+TIME_FISHING_ARROW_PURPLE   = TIME_FISHING / 2  # seconds
+TIME_FISHING_ARROW_YELLOW   = TIME_FISHING / 4  # seconds
 
 KEY_WORM    = '2'
 KEY_FISHING = 'space'
@@ -77,34 +78,35 @@ class Bot:
         self.finder = finder
         self.hsv_filter = hsv_filter
 
-    def _wait(self, seconds: int) -> None:
+    def wait(self, seconds: int) -> None:
         for i in range(seconds):
             logger.debug(f'Waiting for {seconds - i} more seconds..')
             time.sleep(i)
 
-    def _press(self, key_name: str) -> None:
+    def press(self, key_name: str) -> None:
         logger.debug(f'Pressing key: {key_name}..')
         time.sleep(0.05)
         pydirectinput.press(key_name)
         time.sleep(0.05)
         logger.debug(f'Key pressed.')
 
-    def _find(self, template: str | list[str], threshold: int | list[int]) -> dict[str,Sequence[Rect]]:
+    def apply_filter(self, screenshot_raw: NDArray | MatLike, hsv_parameters: dict[str, int]) ->  NDArray | MatLike:
+        self.hsv_filter.hsv_parameters = hsv_parameters
+        return self.hsv_filter.apply_hsv_filter(screenshot_raw)
+
+    def find(self, template: str | list[str], threshold: int | list[int], hsv_parameters: dict[str, int] | list[dict[str, int]]) -> dict[str,Sequence[Rect]]:
         screenshot_raw = self.window_capturer.get_screenshot()
         results = dict()
 
-        if isinstance(template, list) and isinstance(threshold, list):
-            for template, threshold in zip(template, threshold):
-                self.hsv_filter.hsv_parameters = HSV_PARAMETERS[template]
-                screenshot_hsv = self.hsv_filter.apply_hsv_filter(screenshot_raw)
-                results[template] = self.finder.find_template(template, screenshot_hsv, threshold)
+        if isinstance(template, list) and isinstance(threshold, list) and isinstance(hsv_parameters, list):
+            for template, threshold, hsv_parameters in zip(template, threshold, hsv_parameters):
+               screenshot_hsv = self.apply_filter(screenshot_raw, hsv_parameters)
+               results[template] = self.finder.find_template(template, screenshot_hsv, threshold)                                                                                                                     
         else:
-            self.hsv_filter.hsv_parameters = HSV_PARAMETERS[template]
-            screenshot_hsv = self.hsv_filter.apply_hsv_filter(screenshot_raw)
+            screenshot_hsv = self.apply_filter(screenshot_raw, hsv_parameters)
             results[template] = self.finder.find_template(template, screenshot_hsv, threshold)
-            
+        
         if self.debug_mode:
-            logger.debug(f'Finding results of {template}:\n {results}')
             templates_rectangles = itertools.chain(*results.values())
             Drawer.draw_rectangles(screenshot_hsv, templates_rectangles)
         
@@ -112,74 +114,134 @@ class Bot:
 
 
     def run(self) -> None:
+        if self.debug_mode:
+            WindowCapturer.list_window_names()
+
         step = Step.STEP_1
 
         while True:
-            if self.debug_mode:
-                WindowCapturer.list_window_names()
-            
+            logger.debug('Started bot.')
+
             if step == Step.STEP_1:
-                self._wait(TIME_BEGINNING)
+                logger.debug(f'Started step: {step}.')
+
+                self.wait(TIME_BEGINNING)
+
+                logger.debug(f'Finished step: {step}.')
                 step = Step.STEP_2
 
             if step == Step.STEP_2:
-                self._press(KEY_WORM)
+                logger.debug(f'Started step: {step}.')
+
+                self.press(KEY_WORM)
+
+                logger.debug(f'Finished step: {step}.')
                 step = Step.STEP_3
 
             if step == Step.STEP_3:
-                self._press(KEY_FISHING)
+                logger.debug(f'Started step: {step}.')
+
+                self.press(KEY_FISHING)
+
+                logger.debug(f'Finished step: {step}.')
                 step = Step.STEP_4
 
             if step == Step.STEP_4:
-                findings = self._find('icon', THRESHOLDS["icon"])
+                logger.debug(f'Started step: {step}.')
+
+                findings = self.find('icon', THRESHOLDS["icon"], HSV_PARAMETERS["icon"])
+
                 if findings['icon']:
+                    logger.debug(f'Found object. Finished step: {step}.')
                     step = Step.STEP_5
 
             if step == Step.STEP_5:
-                self._wait(TIME_AFTER_ICON_APPEARS)
+                logger.debug(f'Started step: {step}.')
+
+                self.wait(TIME_AFTER_ICON_APPEARS)
+
+                logger.debug(f'Finished step: {step}.')
                 step = Step.STEP_6
 
             if step == Step.STEP_6:
-                self._press(KEY_FISHING)
+                logger.debug(f'Started step: {step}.')
+
+                self.press(KEY_FISHING)
+
+                logger.debug(f'Finished step: {step}.')
                 step = Step.STEP_7
 
             if step == Step.STEP_7:
-                self._wait(TIME_PAUSE_BEFORE_FISHING)
+                logger.debug(f'Started step: {step}.')
+
+                self.wait(TIME_PAUSE_BEFORE_FISHING)
+
+                logger.debug(f'Finished step: {step}.')
                 step = Step.STEP_8
 
             if step == Step.STEP_8:
-                findings = self._find('fishing_rod', THRESHOLDS["fishing_rod"])
+                logger.debug(f'Started step: {step}.')
+
+                findings = self.find('fishing_rod', THRESHOLDS["fishing_rod"], HSV_PARAMETERS["icon"])
+
                 if findings['fishing_rod']:
+                    logger.debug(f'Found object. Finished step: {step}.')
                     step = Step.STEP_9
                 else:
+                    logger.debug(f'Didnt find object. Finished step: {step}.')
                     step = Step.STEP_1
             
             if step == Step.STEP_9:
-                self._press(KEY_FISHING)
-                findings = self._find(['arrow_blue', 'arrow_purple', 'arrow_yellow'], [THRESHOLDS["arrow_blue"], THRESHOLDS["arrow_purple"], THRESHOLDS["arrow_yellow"]])
+                logger.debug(f'Started step: {step}.')
+
+                self.press(KEY_FISHING)
+
+                findings = self.find(
+                    ['arrow_blue', 'arrow_purple', 'arrow_yellow'],
+                    [THRESHOLDS["arrow_blue"], THRESHOLDS["arrow_purple"], THRESHOLDS["arrow_yellow"]],
+                    [HSV_PARAMETERS["arrow_blue"], HSV_PARAMETERS["arrow_purple"], HSV_PARAMETERS["arrow_yellow"]]
+                )
                 if any(findings['arrow_blue'], findings['arrow_purple'], findings['arrow_yellow']):
+                    logger.debug(f'Found object. Finished step: {step}.')
                     step = Step.STEP_10
                 else:
-                    self._wait(0.4)
+                    logger.debug(f'Didnt find object.')
+                    self.wait(TIME_FISHING)
 
             if step == Step.STEP_10:
-                self._press(KEY_FISHING)
-                findings = self._find(['arrow_blue', 'arrow_purple', 'arrow_yellow'], [THRESHOLDS["arrow_blue"], THRESHOLDS["arrow_purple"], THRESHOLDS["arrow_yellow"]])
+                logger.debug(f'Started step: {step}.')
+
+                self.press(KEY_FISHING)
+
+                findings = self.find(
+                    ['arrow_blue', 'arrow_purple', 'arrow_yellow'],
+                    [THRESHOLDS["arrow_blue"], THRESHOLDS["arrow_purple"], THRESHOLDS["arrow_yellow"]],
+                    [HSV_PARAMETERS["arrow_blue"], HSV_PARAMETERS["arrow_purple"], HSV_PARAMETERS["arrow_yellow"]]
+                )
                 if findings['arrow_blue']:
-                    self._wait(0.8)
+                    logger.debug(f'Found object.')
+                    self.wait(TIME_FISHING_ARROW_BLUE)
                 elif findings['arrow_purple']:
-                    self._wait(0.2)
+                    logger.debug(f'Found object.')
+                    self.wait(TIME_FISHING_ARROW_PURPLE)
                 elif findings['arrow_yellow']:
-                    self._wait(0.1)
+                    logger.debug(f'Found object.')
+                    self.wait(TIME_FISHING_ARROW_YELLOW)
                 else:
+                    logger.debug(f'Didnt find object. Finished step: {step}.')
                     step = Step.STEP_11
 
             if step == Step.STEP_11:
-                self._press(KEY_FISHING)
-                findings = self._find('fishing_rod', THRESHOLDS["fishing_rod"])
+                logger.debug(f'Started step: {step}.')
+
+                self.press(KEY_FISHING)
+
+                findings = self.find('fishing_rod', THRESHOLDS["fishing_rod"], HSV_PARAMETERS["fishing_rod"])
                 if findings['fishing_rod']:
-                    self._wait(0.4)
+                    logger.debug(f'Found object.')
+                    self.wait(TIME_FISHING)
                 else:
+                    logger.debug(f'Didnt find object. Finished step: {step}.')
                     step = Step.STEP_1          
     
             if cv.waitKey(1) == ord('q'):

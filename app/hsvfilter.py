@@ -9,12 +9,15 @@ class HsvFilter:
 
     def __init__(
             self,
-            hsv_parameters: dict[str, int],
+            hsv_parameters: Optional[dict[str, int]] = None,
             gui: bool = False,
         ) -> None:
 
         self.TRACKBAR_WINDOW = "Trackbars"
         self.gui = gui
+        
+        if not hsv_parameters:
+            hsv_parameters = dict()
         
         self.hsv_parameters = {
             "hMin": hsv_parameters.get('hMin', 0),
@@ -71,28 +74,26 @@ class HsvFilter:
     def _empty_callback(self, _) -> None:
         ...
     
-    def _get_hsv_filter_from_controls(self) -> None:
+    def get_hsv_filter_from_controls(self) -> dict[str, int]:
         # Get current positions of all trackbars
-        self.hsv_parameters['hMin'] = cv.getTrackbarPos('HMin', self.TRACKBAR_WINDOW)
-        self.hsv_parameters['sMin'] = cv.getTrackbarPos('SMin', self.TRACKBAR_WINDOW)
-        self.hsv_parameters['vMin'] = cv.getTrackbarPos('VMin', self.TRACKBAR_WINDOW)
-        self.hsv_parameters['hMax'] = cv.getTrackbarPos('HMax', self.TRACKBAR_WINDOW)
-        self.hsv_parameters['sMax'] = cv.getTrackbarPos('SMax', self.TRACKBAR_WINDOW)
-        self.hsv_parameters['vMax'] = cv.getTrackbarPos('VMax', self.TRACKBAR_WINDOW)
-        self.hsv_parameters['sAdd'] = cv.getTrackbarPos('SAdd', self.TRACKBAR_WINDOW)
-        self.hsv_parameters['sSub'] = cv.getTrackbarPos('SSub', self.TRACKBAR_WINDOW)
-        self.hsv_parameters['vAdd'] = cv.getTrackbarPos('VAdd', self.TRACKBAR_WINDOW)
-        self.hsv_parameters['vSub'] = cv.getTrackbarPos('VSub', self.TRACKBAR_WINDOW)
+        return {
+            'hMin': cv.getTrackbarPos('HMin', self.TRACKBAR_WINDOW),
+            'sMin': cv.getTrackbarPos('SMin', self.TRACKBAR_WINDOW),
+            'vMin': cv.getTrackbarPos('VMin', self.TRACKBAR_WINDOW),
+            'hMax': cv.getTrackbarPos('HMax', self.TRACKBAR_WINDOW),
+            'sMax': cv.getTrackbarPos('SMax', self.TRACKBAR_WINDOW),
+            'vMax': cv.getTrackbarPos('VMax', self.TRACKBAR_WINDOW),
+            'sAdd': cv.getTrackbarPos('SAdd', self.TRACKBAR_WINDOW),
+            'sSub': cv.getTrackbarPos('SSub', self.TRACKBAR_WINDOW),
+            'vAdd': cv.getTrackbarPos('VAdd', self.TRACKBAR_WINDOW),
+            'vSub': cv.getTrackbarPos('VSub', self.TRACKBAR_WINDOW),
+        }
     
     # given an image and an HSV filter, apply the filter and return the resulting image.
     # if a filter is not supplied, the control GUI trackbars will be used
     def apply_hsv_filter(self, original_image: NDArray | MatLike) -> NDArray | MatLike:
         # convert image to HSV
         hsv_image = cv.cvtColor(original_image, cv.COLOR_BGR2HSV)
-
-        # if we haven't been given a defined filter, use the filter values from the GUI
-        if self.gui:
-            self._get_hsv_filter_from_controls()
 
         # add/subtract saturation and value
         h, s, v = cv.split(hsv_image)
@@ -128,7 +129,3 @@ class HsvFilter:
             c[c <= lim] = 0
             c[c > lim] -= amount
         return c
-    
-    @hsv_parameters.setter
-    def hsv_parameters(self, value: dict) -> None:
-        self.hsv_parameters = value
