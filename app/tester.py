@@ -2,7 +2,7 @@ from app.windowcapturer import WindowCapturer
 from app.hsvfilter import HsvFilter
 from app.finder import Finder
 from app.drawer import Drawer
-from app.main import Bot
+from app import main as main
 import cv2 as cv
 from loguru import logger
 
@@ -35,6 +35,7 @@ THRESHOLDS = {
     "icon"          : 0.6,
 }
 
+
 templates_to_use = "icon"
 hsv_parameters_to_use = HSV_PARAMETERS["icon"]
 thresholds_to_use = THRESHOLDS["icon"]
@@ -52,7 +53,7 @@ if __name__ == "__main__":
             templates_to_use,
             thresholds_to_use,
             hsv_parameters_from_controls,
-            mocked_image_path="img/test_icon.jpg",
+            mocked_image_path="mocked_screenshots/test_icon.jpg",
         )
         
         logger.debug(f'Results: {results}')
