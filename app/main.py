@@ -19,9 +19,7 @@ from typing import Optional
 
 DEBUG_MODE = True
 
-WINDOW_NAME             = 'Mt2009'
-WINDOW_BORDERS_OFFSET   = 8         # pixels
-WINDOW_TITLEBAR_OFFSET  = 30        # pixels
+WINDOW_COORDINATES = {"top": 290, "left": 660, "width": 600, "height": 500}
 
 HSV_PARAMETERS = {
     "arrow_blue"    : {"hMin": 0, "sMin": 0, "vMin": 63, "hMax": 179, "sMax": 200, "vMax": 255, "sAdd": 0, "sSub": 0, "vAdd": 0, "vSub": 12}, # TODO to configure
@@ -254,7 +252,7 @@ class Bot:
             #     break
 
 if __name__ == "__main__":
-    window_capturer = WindowCapturer(WINDOW_NAME, WINDOW_BORDERS_OFFSET, WINDOW_TITLEBAR_OFFSET)
+    window_capturer = WindowCapturer(WINDOW_COORDINATES)
     hsv_filter = HsvFilter()
     finder = Finder(TEMPLATES)
     bot = Bot(window_capturer, finder, hsv_filter, DEBUG_MODE)
