@@ -2,6 +2,7 @@ from app.windowcapturer import WindowCapturer
 from app.hsvfilter import HsvFilter
 from app.finder import Finder
 from app.drawer import Drawer
+from app.main import Bot
 from app import main as main
 import cv2 as cv
 from loguru import logger
@@ -21,11 +22,11 @@ HSV_PARAMETERS = {
 }
 
 TEMPLATES = {
-    "arrow_blue"    : "img/arrow_blue.jpg",
-    "arrow_purple"  : "img/arrow_purple.jpg",
-    "arrow_yellow"  : "img/arrow_yellow.jpg",
-    "fishing_rod"   : "img/fishing_rod.jpg",
-    "icon"          : "img/icon.jpg",
+    "arrow_blue"    : "templates/arrow_blue.jpg",
+    "arrow_purple"  : "templates/arrow_purple.jpg",
+    "arrow_yellow"  : "templates/arrow_yellow.jpg",
+    "fishing_rod"   : "templates/fishing_rod.jpg",
+    "icon"          : "templates/icon.jpg",
 }
 THRESHOLDS = {
     "arrow_blue"    : 0.5,
