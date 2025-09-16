@@ -3,8 +3,10 @@ from mss.base import MSSBase
 from numpy.typing import NDArray
 import numpy as np
 from typing import Generator
+from cv2.typing import MatLike
+import cv2 as cv
 
-class WindowCapturer:
+class Screenshot:
 
     def __init__(self, coordinates: dict[str, int]) -> None:
         self.coordinates = {
@@ -20,15 +22,10 @@ class WindowCapturer:
         with mss() as ss:
             while True:
                 yield ss.grab(self.coordinates)
-
-    def get_screenshot(self) -> NDArray:
+    
+    def make_screenshot(self) -> NDArray:
         screenshot = next(self.handler)
         return np.array(screenshot)
-        
-    # translate a pixel position on a screenshot image to a pixel position on the screen.
-    # pos = (x, y)
-    # WARNING: if you move the window being captured after execution is started, this will
-    # return incorrect coordinates, because the window position is only calculated in
-    # the __init__ constructor.
-    def get_pixel_position_in_window(self, pixel_position_from_left: int, pixel_position_from_top: int) -> tuple[int, int]:
-        return (pixel_position_from_left + self.coordinates['left'], pixel_position_from_top + self.coordinates['top'])
+    
+    def save_screenshot(self, image: NDArray | MatLike, path: str) -> None:
+        cv.imwrite(path, image)
