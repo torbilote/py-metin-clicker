@@ -11,7 +11,7 @@ class Drawer:
     # given a list of [x, y, w, h] rectangles and a canvas image to draw on, return an image with
     # all of those rectangles drawn
     @staticmethod
-    def draw_rectangles(base_image: NDArray|MatLike , rectangles: Sequence[Rect]) -> None:
+    def draw_rectangles(base_image: NDArray|MatLike, rectangles: Sequence[Rect]) -> NDArray|MatLike:
         # these colors are actually BGR
         line_color = (0, 255, 0)
         line_type = cv.LINE_4
@@ -24,3 +24,5 @@ class Drawer:
             cv.rectangle(base_image, top_left, bottom_right, line_color, lineType=line_type)
             
         cv.imshow('Screenshot', base_image)
+        
+        return base_image

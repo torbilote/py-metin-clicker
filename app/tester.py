@@ -1,58 +1,29 @@
 from app.windowcapturer2 import WindowCapturer
 from app.hsvfilter import HsvFilter
 from app.finder import Finder
-from app.drawer import Drawer
-from app.main import Bot
-from app import main as main
+from app import main
 import cv2 as cv
 from loguru import logger
 
-DEBUG_MODE = True
 
-WINDOW_COORDINATES = {"top": 290, "left": 660, "width": 600, "height": 500}
-
-HSV_PARAMETERS = {
-    # "arrow_blue"    : {"hMin": 0, "sMin": 0, "vMin": 63, "hMax": 179, "sMax": 200, "vMax": 255, "sAdd": 0, "sSub": 0, "vAdd": 0, "vSub": 12},
-    # "arrow_purple"  : {"hMin": 0, "sMin": 0, "vMin": 63, "hMax": 179, "sMax": 200, "vMax": 255, "sAdd": 0, "sSub": 0, "vAdd": 0, "vSub": 12},
-    # "arrow_yellow"  : {"hMin": 0, "sMin": 0, "vMin": 63, "hMax": 179, "sMax": 200, "vMax": 255, "sAdd": 0, "sSub": 0, "vAdd": 0, "vSub": 12},
-    # "fishing_rod"   : {"hMin": 0, "sMin": 0, "vMin": 63, "hMax": 179, "sMax": 200, "vMax": 255, "sAdd": 0, "sSub": 0, "vAdd": 0, "vSub": 12},
-    "icon"          : {"hMin": 0, "sMin": 0, "vMin": 0, "hMax": 179, "sMax": 255, "vMax": 255, "sAdd": 0, "sSub": 0, "vAdd": 0, "vSub": 0},
-}
-
-TEMPLATES = {
-    "arrow_blue"    : "templates/arrow_blue.jpg",
-    "arrow_purple"  : "templates/arrow_purple.jpg",
-    "arrow_yellow"  : "templates/arrow_yellow.jpg",
-    "fishing_rod"   : "templates/fishing_rod.jpg",
-    "icon"          : "templates/icon.jpg",
-}
-THRESHOLDS = {
-    "arrow_blue"    : 0.5,
-    "arrow_purple"  : 0.5,
-    "arrow_yellow"  : 0.5,
-    "fishing_rod"   : 0.5,
-    "icon"          : 0.6,
-}
-
-
-templates_to_use = "icon"
-hsv_parameters_to_use = HSV_PARAMETERS["icon"]
-thresholds_to_use = THRESHOLDS["icon"]
+TEMPLATES_TO_USE = "arrow_yellow"
+HSV_PARAMETERS_TO_USE = main.HSV_PARAMETERS["arrow_yellow"]
+THRESHOLDS_TO_USE = main.THRESHOLDS["arrow_yellow"]
 
 if __name__ == "__main__":
-    window_capturer = WindowCapturer(WINDOW_COORDINATES)
-    hsv_filter = HsvFilter(hsv_parameters_to_use, gui=True)
-    finder = Finder(TEMPLATES)
-    bot = Bot(window_capturer, finder, hsv_filter, DEBUG_MODE)
+    window_capturer = WindowCapturer(main.WINDOW_COORDINATES)
+    hsv_filter = HsvFilter(HSV_PARAMETERS_TO_USE, gui=True)
+    finder = Finder(main.TEMPLATES)
+    bot = main.Bot(window_capturer, finder, hsv_filter, main.DEBUG_MODE)
 
 
     while True:
         hsv_parameters_from_controls = bot.hsv_filter.get_hsv_filter_from_controls()
         results = bot.find(
-            templates_to_use,
-            thresholds_to_use,
+            TEMPLATES_TO_USE,
+            THRESHOLDS_TO_USE,
             hsv_parameters_from_controls,
-            # mocked_image_path="mocked_screenshots/test_icon.jpg",
+            mocked_image_path="mocked_screenshots/test_arrow_purple.jpg",
         )
         
         logger.debug(f'Results: {results}')

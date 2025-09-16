@@ -31,4 +31,4 @@ class WindowCapturer:
     # return incorrect coordinates, because the window position is only calculated in
     # the __init__ constructor.
     def get_pixel_position_in_window(self, pixel_position_from_left: int, pixel_position_from_top: int) -> tuple[int, int]:
-        return (pixel_position_from_left + self.full_offset_from_left, pixel_position_from_top + self.full_offset_from_top)
+        return (pixel_position_from_left + self.coordinates['left'], pixel_position_from_top + self.coordinates['top'])
