@@ -4,7 +4,7 @@ from cv2.typing import MatLike, Rect
 from typing import Sequence
 
 
-class Draw:
+class Drawer:
     line_color = (0, 255, 0) # BGR
     line_type = cv.LINE_4
 
@@ -17,8 +17,5 @@ class Draw:
             cv.rectangle(base_image, top_left, bottom_right, cls.line_color, lineType=cls.line_type)
             
         cv.imshow('Screenshot', base_image)
-
-        if cv.waitKey(1) == ord('q'):
-            cv.destroyAllWindows()
         
         return base_image

@@ -6,8 +6,7 @@ from typing import Generator
 from cv2.typing import MatLike
 import cv2 as cv
 
-class Screenshot:
-
+class Screenshotter:
     def __init__(self, coordinates: dict[str, int]) -> None:
         self.coordinates = {
             "top": coordinates.get("top", 0),
@@ -22,6 +21,7 @@ class Screenshot:
         with mss() as ss:
             while True:
                 yield ss.grab(self.coordinates)
+    
     
     def make_screenshot(self) -> NDArray:
         screenshot = next(self.handler)
