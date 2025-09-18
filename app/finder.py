@@ -5,7 +5,7 @@ from cv2.typing import MatLike, Rect
 from typing import Sequence, Optional
 
 class Finder:
-    templates: Optional[dict[str, any]] = None
+    templates: dict[str, any] = dict()
 
     @classmethod
     def add_template(cls, template_name: str, template_path : str) -> None:
