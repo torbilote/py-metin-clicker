@@ -2,12 +2,10 @@ from app.screenshotter import Screenshotter
 from app.hsvfilter import HsvFilter
 from app.finder import Finder
 from app.drawer import Drawer
-from app.constants import DEBUG_MODE, WINDOW_COORDINATES, TEMPLATE_BASE, TEMPLATE_ARROW_BLUE, TEMPLATE_ARROW_YELLOW, TEMPLATE_ARROW_PURPLE, TEMPLATE_FISHING_ROD, TEMPLATE_ICON, HOTKEYS, TIMERS, COUNTERS, STEPS
+from app import constants as c
 
 import cv2 as cv
-import itertools
 import time
-from loguru import logger
 import pydirectinput
 from cv2.typing import Rect
 from typing import Sequence
@@ -53,111 +51,122 @@ def has_time_ended(start_time: float, time_limit: float) -> bool:
 def has_object_been_found(object_coordinates: Optional[Sequence[Rect]]) -> bool:
     return len(object_coordinates) > 0
 
+
 def main() -> None:
     start_time_3: float = 0.0
     start_time_6: float = 0.0
     start_time_7: float = 0.0
 
-    step = STEPS.STEP_1
+    step = c.STEP_1
 
     while True:
         if cv.waitKey(1) == ord('q'):
             cv.destroyAllWindows()
             break
 
-        if step == STEPS.STEP_1:
-            wait_seconds(TIMERS.PAUSE_WHEN_NEW_ROUND_STARTS)
-            step = STEPS.STEP_2
+        if step == c.STEP_1:
+            wait_seconds(c.TIMER_PAUSE_WHEN_NEW_ROUND_STARTS)
+            step = c.STEP_2
 
-        if step == STEPS.STEP_2:
-            press_hotkey(HOTKEYS.PICK_WORM)
-            wait_seconds(TIMERS.PAUSE_AFTER_WORM_IS_PICKED)
-            press_hotkey(HOTKEYS.ACTION)
-            step = STEPS.STEP_3
+        if step == c.STEP_2:
+            press_hotkey(c.HOTKEY_PICK_WORM)
+            wait_seconds(c.TIMER_PAUSE_AFTER_WORM_IS_PICKED)
+            press_hotkey(c.HOTKEY_ACTION)
+            step = c.STEP_3
 
-        if step == STEPS.STEP_3:
+        if step == c.STEP_3:
             start_time_3 = set_timer(start_time_3)
-            findings = find_template_on_image(TEMPLATE_ICON)
+            screenshot_raw = make_screenshot(c.WINDOW_COORDINATES)
+            screenshot_hsv = apply_filter_on_image(screenshot_raw, c.TEMPLATE_ICON_HSV_PARAMETERS)
+            findings = find_template_on_image(c.TEMPLATE_ICON_NAME, screenshot_hsv, c.TEMPLATE_ICON_THRESHOLD)
 
             if has_object_been_found(findings):
-                wait_seconds(TIMERS.PAUSE_AFTER_ICON_APPEARS)
+                wait_seconds(c.TIMER_PAUSE_AFTER_ICON_APPEARS)
                 start_time_3 = reset_timer()
-                step = STEPS.STEP_4
-            elif not has_time_ended(start_time_3, TIMERS.WAITING_LIMIT_FOR_ICON_TO_APPEAR):
+                step = c.STEP_4
+            elif not has_time_ended(start_time_3, c.TIMER_WAITING_LIMIT_FOR_ICON_TO_APPEAR):
                 continue
             else:
                 start_time_3 = reset_timer()
-                step = STEPS.STEP_1
+                step = c.STEP_1
 
-        if step == STEPS.STEP_4:
-            press_hotkey(HOTKEYS.ACTION)
-            step = STEPS.STEP_5
+        if step == c.STEP_4:
+            press_hotkey(c.HOTKEY_ACTION)
+            step = c.STEP_5
 
-        if step == STEPS.STEP_5:            
-            wait_seconds(TIMERS.PAUSE_BEFORE_FISHING_ROD_APPEARS)
-            findings = find_template_on_image(TEMPLATE_FISHING_ROD)
+        if step == c.STEP_5:            
+            wait_seconds(c.TIMER_PAUSE_BEFORE_FISHING_ROD_APPEARS)
+            screenshot_raw = make_screenshot(c.WINDOW_COORDINATES)
+            screenshot_hsv = apply_filter_on_image(screenshot_raw, c.TEMPLATE_FISHING_ROD_HSV_PARAMETERS)
+            findings = find_template_on_image(c.TEMPLATE_FISHING_ROD_NAME, screenshot_hsv, c.TEMPLATE_FISHING_ROD_THRESHOLD)
 
             if has_object_been_found(findings):
-                wait_seconds(TIMERS.PAUSE_AFTER_FISHING_ROD_APPEARS)
-                step = STEPS.STEP_6
+                wait_seconds(c.TIMER_PAUSE_AFTER_FISHING_ROD_APPEARS)
+                step = c.STEP_6
             else:
-                step = STEPS.STEP_1
+                step = c.STEP_1
 
-        if step == STEPS.STEP_6:
+        if step == c.STEP_6:
             start_time_6 = set_timer(start_time_6)
-            press_hotkey(HOTKEYS.ACTION)
-
-            findings_arrow_blue = find_template_on_image(TEMPLATE_ARROW_BLUE)
+            press_hotkey(c.HOTKEY_ACTION)
+            screenshot_raw = make_screenshot(c.WINDOW_COORDINATES)
+            
+            screenshot_hsv_arrow_blue = apply_filter_on_image(screenshot_raw, c.TEMPLATE_ARROW_BLUE_HSV_PARAMETERS)
+            findings_arrow_blue = find_template_on_image(c.TEMPLATE_ARROW_BLUE_NAME, screenshot_hsv_arrow_blue, c.TEMPLATE_ARROW_BLUE_THRESHOLD)
             if has_object_been_found(findings_arrow_blue):
-                step = STEPS.STEP_7_BLUE
+                step = c.STEP_7_BLUE
                 start_time_6 = reset_timer()
                 continue
-
-            findings_arrow_purple = find_template_on_image(TEMPLATE_ARROW_PURPLE)
+            
+            screenshot_hsv_arrow_purple = apply_filter_on_image(screenshot_raw, c.TEMPLATE_ARROW_PURPLE_HSV_PARAMETERS)
+            findings_arrow_purple = find_template_on_image(c.TEMPLATE_ARROW_PURPLE_NAME, screenshot_hsv_arrow_purple, c.TEMPLATE_ARROW_PURPLE_THRESHOLD)
             if has_object_been_found(findings_arrow_purple):
-                step = STEPS.STEP_7_PURPLE
+                step = c.STEP_7_PURPLE
                 start_time_6 = reset_timer()
                 continue
 
-            findings_arrow_yellow = find_template_on_image(TEMPLATE_ARROW_YELLOW)
+            screenshot_hsv_arrow_yellow = apply_filter_on_image(screenshot_raw, c.TEMPLATE_ARROW_YELLOW_HSV_PARAMETERS)
+            findings_arrow_yellow = find_template_on_image(c.TEMPLATE_ARROW_YELLOW_NAME, screenshot_hsv_arrow_yellow, c.TEMPLATE_ARROW_YELLOW_THRESHOLD)
             if has_object_been_found(findings_arrow_yellow):
-                step = STEPS.STEP_7_YELLOW
+                step = c.STEP_7_YELLOW
                 start_time_6 = reset_timer()
                 continue
 
-            if not has_time_ended(start_time_6, TIMERS.WAITING_LIMIT_FOR_FISHING):
-                wait_seconds(TIMERS.INTERVAL_WHEN_FISHING_GREEN_MODE)
+            if not has_time_ended(start_time_6, c.TIMER_WAITING_LIMIT_FOR_FISHING):
+                wait_seconds(c.TIMER_INTERVAL_WHEN_FISHING_GREEN_MODE)
                 continue
             else:
-                step = STEPS.STEP_1
+                step = c.STEP_1
 
-        if step in (STEPS.STEP_7_BLUE, STEPS.STEP_7_PURPLE, STEPS.STEP_7_YELLOW):
+        if step in (c.STEP_7_BLUE, c.STEP_7_PURPLE, c.STEP_7_YELLOW):
             start_time_7 = set_timer(start_time_7)
 
-            if has_time_ended(start_time_7, TIMERS.WAITING_LIMIT_FOR_ACTIVE_MODE):
-                press_hotkey(HOTKEYS.ACTION)
+            if has_time_ended(start_time_7, c.TIMER_WAITING_LIMIT_FOR_ACTIVE_MODE):
+                press_hotkey(c.HOTKEY_ACTION)
 
-                if step == STEPS.STEP_7_BLUE:
-                    wait_seconds(TIMERS.INTERVAL_WHEN_FISHING_BLUE_MODE)
-                elif step == STEPS.STEP_7_PURPLE:
-                    wait_seconds(TIMERS.INTERVAL_WHEN_FISHING_PURPLE_MODE)
-                elif step == STEPS.STEP_7_YELLOW:
-                    wait_seconds(TIMERS.INTERVAL_WHEN_FISHING_YELLOW_MODE)
+                if step == c.STEP_7_BLUE:
+                    wait_seconds(c.TIMER_INTERVAL_WHEN_FISHING_BLUE_MODE)
+                elif step == c.STEP_7_PURPLE:
+                    wait_seconds(c.TIMER_INTERVAL_WHEN_FISHING_PURPLE_MODE)
+                elif step == c.STEP_7_YELLOW:
+                    wait_seconds(c.TIMER_INTERVAL_WHEN_FISHING_YELLOW_MODE)
 
                 continue
             else:
-                step = STEPS.STEP_8
+                step = c.STEP_8
                 start_time_7 = reset_timer()
 
-        if step == STEPS.STEP_8:
-            findings = find_template_on_image(TEMPLATE_FISHING_ROD)
+        if step == c.STEP_8:
+            screenshot_raw = make_screenshot(c.WINDOW_COORDINATES)
+            screenshot_hsv = apply_filter_on_image(screenshot_raw, c.TEMPLATE_FISHING_ROD_HSV_PARAMETERS)
+            findings = find_template_on_image(c.TEMPLATE_FISHING_ROD_NAME, screenshot_hsv, c.TEMPLATE_FISHING_ROD_THRESHOLD)
 
             if has_object_been_found(findings):
-                press_hotkey(HOTKEYS.ACTION)
-                wait_seconds(TIMERS.INTERVAL_WHEN_FISHING_GREEN_MODE)
+                press_hotkey(c.HOTKEY_ACTION)
+                wait_seconds(c.TIMER_INTERVAL_WHEN_FISHING_GREEN_MODE)
                 continue
             else:
-                step = STEPS.STEP_1
+                step = c.STEP_1
 
 
 if __name__ == "__main__":

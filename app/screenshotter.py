@@ -9,9 +9,6 @@ import cv2 as cv
 class Screenshotter:
     handler: Optional[Generator[ScreenShot, None, None]] = None
 
-    def __init__(self) -> None:
-        ...
-
     def _set_handler(coordinates) -> Generator[ScreenShot, None, None]:
         with mss() as ss:
             while True:

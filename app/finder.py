@@ -3,13 +3,9 @@ import numpy as np
 from numpy.typing import NDArray
 from cv2.typing import MatLike, Rect
 from typing import Sequence, Optional
-from app.constants import TEMPLATE_BASE
 
 class Finder:
     templates: Optional[dict[str, any]] = None
-
-    def __init__(self) -> None:
-        ...
 
     @classmethod
     def add_template(cls, template_name: str, template_path : str) -> None:

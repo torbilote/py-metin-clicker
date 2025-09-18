@@ -7,9 +7,6 @@ from typing import Sequence
 class Drawer:
     line_color: tuple = (0, 255, 0) # BGR
     line_type: int = cv.LINE_4
-
-    def __init__(self) -> None:
-        ...
     
     @classmethod
     def draw_rectangles(cls, base_image: NDArray | MatLike, rectangles: Sequence[Rect]) -> None:
