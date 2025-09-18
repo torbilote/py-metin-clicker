@@ -3,7 +3,7 @@ DEBUG_MODE  : bool = True
 HOTKEY_ACTION       : str = 'space'
 HOTKEY_PICK_WORM    : str = '2'
 
-WINDOW_COORDINATES  : dict[str, int] = {"top": 0, "left": 0, "width": 800, "height": 600}
+WINDOW_COORDINATES  : dict[str, int] = {"top": 0, "left": 200, "width": 600, "height": 400}
 
 TEMPLATE_ARROW_BLUE_NAME    : str = "arrow_blue" 
 TEMPLATE_ARROW_YELLOW_NAME  : str = "arrow_yellow" 

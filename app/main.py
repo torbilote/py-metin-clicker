@@ -1,66 +1,13 @@
-from app.screenshotter import Screenshotter
-from app.hsvfilter import HsvFilter
-from app.finder import Finder
-from app.drawer import Drawer
 from app import constants as c
-
+from app.utils import add_template,apply_filter_on_image,draw_rectangles,find_template_on_image,has_object_been_found,has_time_ended,make_screenshot,press_hotkey,reset_timer,save_screenshot,set_timer,wait_seconds
 import cv2 as cv
-import time
-import pydirectinput
-from cv2.typing import Rect
-from typing import Sequence
-from numpy.typing import NDArray
-from cv2.typing import MatLike
-from typing import Optional
-
-def make_screenshot(coordinates: dict[str, int]) -> NDArray | MatLike:
-    return Screenshotter.make_screenshot(coordinates)
-
-def save_screenshot(screenshot: NDArray | MatLike, file_path: str) -> None:
-    Screenshotter.save_screenshot(screenshot, file_path)
-
-def apply_filter_on_image(base_image: NDArray | MatLike, parameters: dict[str, int]) -> NDArray | MatLike:
-    return HsvFilter.apply_filter_on_image(base_image, parameters)
-
-def add_template(template_name: str, template_path : str) -> None:
-    Finder.add_template(template_name, template_path)
-
-def find_template_on_image(template_name: str, base_image: NDArray | MatLike, threshold: float) -> Sequence[Rect]:
-    return Finder.find_template_on_image(template_name, base_image, threshold)
-
-def draw_rectangles(base_image: NDArray | MatLike, rectangles: Sequence[Rect]) -> None:
-    Drawer.draw_rectangles(base_image, rectangles)
-
-def get_rectangles(base_image: NDArray | MatLike, rectangles: Sequence[Rect]) -> NDArray | MatLike:
-    return Drawer.get_rectangles(base_image, rectangles)
-
-def wait_seconds(wait_seconds: float) -> None:
-    time.sleep(wait_seconds)
-
-def press_hotkey(key_name: str) -> None:
-    time.sleep(0.01)
-    pydirectinput.press(key_name)
-    time.sleep(0.01)
-    
-def set_timer(timer: float) -> float:
-    return timer if timer else time.time()
-
-def reset_timer() -> float:
-    return 0.0
-
-def has_time_ended(start_time: float, time_limit: float) -> bool:
-    return time.time() - start_time >= time_limit
-
-def has_object_been_found(object_coordinates: Optional[Sequence[Rect]]) -> bool:
-    return len(object_coordinates) > 0
-
 
 def main() -> None:
-    Finder.add_template(c.TEMPLATE_ARROW_BLUE_NAME, c.TEMPLATE_ARROW_BLUE_IMAGE_PATH)
-    Finder.add_template(c.TEMPLATE_ARROW_PURPLE_NAME, c.TEMPLATE_ARROW_PURPLE_IMAGE_PATH)
-    Finder.add_template(c.TEMPLATE_ARROW_YELLOW_NAME, c.TEMPLATE_ARROW_YELLOW_IMAGE_PATH)
-    Finder.add_template(c.TEMPLATE_FISHING_ROD_NAME, c.TEMPLATE_FISHING_ROD_IMAGE_PATH)
-    Finder.add_template(c.TEMPLATE_ICON_NAME, c.TEMPLATE_ICON_IMAGE_PATH)
+    add_template(c.TEMPLATE_ARROW_BLUE_NAME, c.TEMPLATE_ARROW_BLUE_IMAGE_PATH)
+    add_template(c.TEMPLATE_ARROW_PURPLE_NAME, c.TEMPLATE_ARROW_PURPLE_IMAGE_PATH)
+    add_template(c.TEMPLATE_ARROW_YELLOW_NAME, c.TEMPLATE_ARROW_YELLOW_IMAGE_PATH)
+    add_template(c.TEMPLATE_FISHING_ROD_NAME, c.TEMPLATE_FISHING_ROD_IMAGE_PATH)
+    add_template(c.TEMPLATE_ICON_NAME, c.TEMPLATE_ICON_IMAGE_PATH)
 
     step = c.STEP_1
 
@@ -88,6 +35,7 @@ def main() -> None:
             screenshot_raw = make_screenshot(c.WINDOW_COORDINATES)
             screenshot_hsv = apply_filter_on_image(screenshot_raw, c.TEMPLATE_ICON_HSV_PARAMETERS)
             findings = find_template_on_image(c.TEMPLATE_ICON_NAME, screenshot_hsv, c.TEMPLATE_ICON_THRESHOLD)
+            draw_rectangles(screenshot_hsv, findings)
 
             if has_object_been_found(findings):
                 wait_seconds(c.TIMER_PAUSE_AFTER_ICON_APPEARS)
@@ -108,6 +56,7 @@ def main() -> None:
             screenshot_raw = make_screenshot(c.WINDOW_COORDINATES)
             screenshot_hsv = apply_filter_on_image(screenshot_raw, c.TEMPLATE_FISHING_ROD_HSV_PARAMETERS)
             findings = find_template_on_image(c.TEMPLATE_FISHING_ROD_NAME, screenshot_hsv, c.TEMPLATE_FISHING_ROD_THRESHOLD)
+            draw_rectangles(screenshot_hsv, findings)
 
             if has_object_been_found(findings):
                 wait_seconds(c.TIMER_PAUSE_AFTER_FISHING_ROD_APPEARS)
@@ -122,6 +71,7 @@ def main() -> None:
             
             screenshot_hsv_arrow_blue = apply_filter_on_image(screenshot_raw, c.TEMPLATE_ARROW_BLUE_HSV_PARAMETERS)
             findings_arrow_blue = find_template_on_image(c.TEMPLATE_ARROW_BLUE_NAME, screenshot_hsv_arrow_blue, c.TEMPLATE_ARROW_BLUE_THRESHOLD)
+            draw_rectangles(screenshot_hsv, findings_arrow_blue)
             if has_object_been_found(findings_arrow_blue):
                 step = c.STEP_7_BLUE
                 start_time_6 = reset_timer()
@@ -129,6 +79,7 @@ def main() -> None:
             
             screenshot_hsv_arrow_purple = apply_filter_on_image(screenshot_raw, c.TEMPLATE_ARROW_PURPLE_HSV_PARAMETERS)
             findings_arrow_purple = find_template_on_image(c.TEMPLATE_ARROW_PURPLE_NAME, screenshot_hsv_arrow_purple, c.TEMPLATE_ARROW_PURPLE_THRESHOLD)
+            draw_rectangles(screenshot_hsv, findings_arrow_purple)
             if has_object_been_found(findings_arrow_purple):
                 step = c.STEP_7_PURPLE
                 start_time_6 = reset_timer()
@@ -136,6 +87,7 @@ def main() -> None:
 
             screenshot_hsv_arrow_yellow = apply_filter_on_image(screenshot_raw, c.TEMPLATE_ARROW_YELLOW_HSV_PARAMETERS)
             findings_arrow_yellow = find_template_on_image(c.TEMPLATE_ARROW_YELLOW_NAME, screenshot_hsv_arrow_yellow, c.TEMPLATE_ARROW_YELLOW_THRESHOLD)
+            draw_rectangles(screenshot_hsv, findings_arrow_yellow)
             if has_object_been_found(findings_arrow_yellow):
                 step = c.STEP_7_YELLOW
                 start_time_6 = reset_timer()
@@ -169,6 +121,7 @@ def main() -> None:
             screenshot_raw = make_screenshot(c.WINDOW_COORDINATES)
             screenshot_hsv = apply_filter_on_image(screenshot_raw, c.TEMPLATE_FISHING_ROD_HSV_PARAMETERS)
             findings = find_template_on_image(c.TEMPLATE_FISHING_ROD_NAME, screenshot_hsv, c.TEMPLATE_FISHING_ROD_THRESHOLD)
+            draw_rectangles(screenshot_hsv, findings)
 
             if has_object_been_found(findings):
                 press_hotkey(c.HOTKEY_ACTION)

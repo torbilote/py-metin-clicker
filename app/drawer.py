@@ -9,19 +9,10 @@ class Drawer:
     line_type: int = cv.LINE_4
     
     @classmethod
-    def draw_rectangles(cls, base_image: NDArray | MatLike, rectangles: Sequence[Rect]) -> None:
-        for (x, y, w, h) in rectangles:
+    def draw_rectangles(cls, base_image: NDArray | MatLike, coordinates: Sequence[Rect]) -> None:
+        for (x, y, w, h) in coordinates:
             top_left = (x, y)
             bottom_right = (x + w, y + h)
             cv.rectangle(base_image, top_left, bottom_right, cls.line_color, lineType=cls.line_type)
             
         cv.imshow('Screenshot', base_image)
-    
-    @classmethod
-    def get_rectangles(cls, base_image: NDArray | MatLike, rectangles: Sequence[Rect]) -> NDArray | MatLike:
-        for (x, y, w, h) in rectangles:
-            top_left = (x, y)
-            bottom_right = (x + w, y + h)
-            cv.rectangle(base_image, top_left, bottom_right, cls.line_color, lineType=cls.line_type)
-        
-        return base_image

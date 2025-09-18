@@ -5,8 +5,7 @@ class GUI:
     
     @classmethod
     def create_gui(cls) -> None:
-        cv.namedWindow(cls.window_name, cv.WINDOW_NORMAL)
-        cv.resizeWindow(cls.window_name, 800, 600)
+        cv.namedWindow(cls.window_name, cv.WINDOW_AUTOSIZE)
 
         cv.createTrackbar('hMin', cls.window_name, 0, 179, lambda: None)
         cv.createTrackbar('sMin', cls.window_name, 0, 255, lambda: None)
@@ -18,7 +17,7 @@ class GUI:
         cv.createTrackbar('sSub', cls.window_name, 0, 255, lambda: None)
         cv.createTrackbar('vAdd', cls.window_name, 0, 255, lambda: None)
         cv.createTrackbar('vSub', cls.window_name, 0, 255, lambda: None)
-        cv.createTrackbar('treshold', cls.window_name, 0, 100, lambda: None)
+        cv.createTrackbar('threshold', cls.window_name, 0, 100, lambda: None)
     
     @classmethod
     def set_parameters_on_gui(cls, parameters: dict[str, int]) -> None:
@@ -38,7 +37,7 @@ class GUI:
             "sSub": cv.getTrackbarPos("sSub", cls.window_name),
             "vAdd": cv.getTrackbarPos("vAdd", cls.window_name),
             "vSub": cv.getTrackbarPos("vSub", cls.window_name),
-            "treshold": cv.getTrackbarPos("treshold", cls.window_name),
+            "threshold x100": cv.getTrackbarPos("threshold", cls.window_name),
         }
         
         
