@@ -1,31 +1,30 @@
 from mss import mss
-from mss.base import MSSBase
+from mss.screenshot import ScreenShot
 from numpy.typing import NDArray
 import numpy as np
-from typing import Generator
+from typing import Generator, Optional
 from cv2.typing import MatLike
 import cv2 as cv
 
 class Screenshotter:
-    def __init__(self, coordinates: dict[str, int]) -> None:
-        self.coordinates = {
-            "top": coordinates.get("top", 0),
-            "left": coordinates.get("left", 0),
-            "width": coordinates.get("width", 800),
-            "height": coordinates.get("height", 600),
-        }
+    handler: Optional[Generator[ScreenShot, None, None]] = None
 
-        self.handler = self._set_handler()
+    def __init__(self) -> None:
+        ...
 
-    def _set_handler(self) -> Generator[MSSBase, None, None]:
+    def _set_handler(coordinates) -> Generator[ScreenShot, None, None]:
         with mss() as ss:
             while True:
-                yield ss.grab(self.coordinates)
+                yield ss.grab(coordinates)
     
-    
-    def make_screenshot(self) -> NDArray:
-        screenshot = next(self.handler)
+    @classmethod
+    def make_screenshot(cls, coordinates: dict[str, int]) -> NDArray | MatLike:
+        if not cls.handler:
+            cls.handler = cls._set_handler(coordinates)
+
+        screenshot = next(cls.handler)
         return np.array(screenshot)
     
-    def save_screenshot(self, image: NDArray | MatLike, path: str) -> None:
-        cv.imwrite(path, image)
+    @staticmethod
+    def save_screenshot(image: NDArray | MatLike, file_path: str) -> None:
+        cv.imwrite(file_path, image)

@@ -5,6 +5,9 @@ from numpy.typing import NDArray
 from cv2.typing import MatLike
 
 class HsvFilter:
+    def __init__(self) -> None:
+        ...
+
     @staticmethod
     def apply_filter_on_image(base_image: NDArray | MatLike, parameters: dict[str, int]) -> NDArray | MatLike:
         hsv_image = cv.cvtColor(base_image, cv.COLOR_BGR2HSV)

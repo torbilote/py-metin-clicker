@@ -1,8 +1,11 @@
 import cv2 as cv
 
 class GUI:
-    window_name = "Trackbars"
+    window_name: str = "Trackbars"
 
+    def __init__(self) -> None:
+        ...
+    
     @classmethod
     def create_gui(cls) -> None:
         cv.namedWindow(cls.window_name, cv.WINDOW_NORMAL)
