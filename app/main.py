@@ -19,17 +19,20 @@ def make_screenshot(coordinates: dict[str, int]) -> NDArray | MatLike:
 def save_screenshot(screenshot: NDArray | MatLike, file_path: str) -> None:
     Screenshotter.save_screenshot(screenshot, file_path)
 
+def apply_filter_on_image(base_image: NDArray | MatLike, parameters: dict[str, int]) -> NDArray | MatLike:
+    return HsvFilter.apply_filter_on_image(base_image, parameters)
+
+def add_template(template_name: str, template_path : str) -> None:
+    Finder.add_template(template_name, template_path)
+
+def find_template_on_image(template_name: str, base_image: NDArray | MatLike, threshold: float) -> Sequence[Rect]:
+    return Finder.find_template_on_image(template_name, base_image, threshold)
+
 def draw_rectangles(base_image: NDArray | MatLike, rectangles: Sequence[Rect]) -> None:
     Drawer.draw_rectangles(base_image, rectangles)
 
 def get_rectangles(base_image: NDArray | MatLike, rectangles: Sequence[Rect]) -> NDArray | MatLike:
     return Drawer.get_rectangles(base_image, rectangles)
-
-def apply_filter_on_image(base_image: NDArray | MatLike, parameters: dict[str, int]) -> NDArray | MatLike:
-    return HsvFilter.apply_filter_on_image(base_image, parameters)
-
-def find_template_on_image(template_name: str, base_image: NDArray | MatLike, threshold: float) -> Sequence[Rect]:
-    return Finder.find_template_on_image(template_name, base_image, threshold)
 
 def wait_seconds(wait_seconds: float) -> None:
     time.sleep(wait_seconds)
@@ -53,11 +56,17 @@ def has_object_been_found(object_coordinates: Optional[Sequence[Rect]]) -> bool:
 
 
 def main() -> None:
+    Finder.add_template(c.TEMPLATE_ARROW_BLUE_NAME, c.TEMPLATE_ARROW_BLUE_IMAGE_PATH)
+    Finder.add_template(c.TEMPLATE_ARROW_PURPLE_NAME, c.TEMPLATE_ARROW_PURPLE_IMAGE_PATH)
+    Finder.add_template(c.TEMPLATE_ARROW_YELLOW_NAME, c.TEMPLATE_ARROW_YELLOW_IMAGE_PATH)
+    Finder.add_template(c.TEMPLATE_FISHING_ROD_NAME, c.TEMPLATE_FISHING_ROD_IMAGE_PATH)
+    Finder.add_template(c.TEMPLATE_ICON_NAME, c.TEMPLATE_ICON_IMAGE_PATH)
+
+    step = c.STEP_1
+
     start_time_3: float = 0.0
     start_time_6: float = 0.0
     start_time_7: float = 0.0
-
-    step = c.STEP_1
 
     while True:
         if cv.waitKey(1) == ord('q'):

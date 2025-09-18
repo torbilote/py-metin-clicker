@@ -14,12 +14,7 @@ class Finder:
             "template": template_processed,
             "width": template_processed.shape[1],
             "height": template_processed.shape[0],
-            "threshold": None,
         }
-
-    @classmethod
-    def update_template_threshold(cls, template_name: str, threshold: float) -> None: 
-        cls.templates[template_name][threshold] = threshold
 
     @classmethod
     def find_template_on_image(cls, template_name: str, base_image: NDArray | MatLike, threshold: float) -> Sequence[Rect]:
