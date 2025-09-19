@@ -5,11 +5,11 @@ from app.drawer import Drawer
 from app.gui import GUI
 import time
 import pydirectinput
-from cv2.typing import Rect
+from cv2.typing import Rect, MatLike
 from typing import Sequence
 from numpy.typing import NDArray
-from cv2.typing import MatLike
-from typing import Optional
+import cv2 as cv
+from typing import Optional, Literal
 
 def make_screenshot(coordinates: dict[str, int]) -> NDArray | MatLike:
     return Screenshotter.make_screenshot(coordinates)
@@ -28,6 +28,15 @@ def find_template_on_image(template_name: str, base_image: NDArray | MatLike, th
 
 def draw_rectangles(base_image: NDArray | MatLike, coordinates: Sequence[Rect]) -> None:
     Drawer.draw_rectangles(base_image, coordinates)
+
+def create_gui() -> None:
+    GUI.create_gui()
+
+def set_parameters_on_gui(parameters: dict[str, int]) -> None:
+    GUI.set_parameters_on_gui(parameters)
+
+def get_parameters_from_gui(parameter_type: Literal['hsv', 'threshold']) -> dict[str, int]:
+    return GUI.get_parameters_from_gui(parameter_type)
 
 def wait_seconds(wait_seconds: float) -> None:
     time.sleep(wait_seconds)
@@ -49,11 +58,5 @@ def has_time_ended(start_time: float, time_limit: float) -> bool:
 def has_object_been_found(object_coordinates: Optional[Sequence[Rect]]) -> bool:
     return len(object_coordinates) > 0
 
-def create_gui() -> None:
-    GUI.create_gui()
-
-def set_parameters_on_gui(parameters: dict[str, int]) -> None:
-    GUI.set_parameters_on_gui(parameters)
-
-def get_parameters_from_gui() -> dict[str, int]:
-    return GUI.get_parameters_from_gui()
+def load_image(image_path: str) -> NDArray | MatLike:
+    return cv.imread(image_path, cv.IMREAD_UNCHANGED)

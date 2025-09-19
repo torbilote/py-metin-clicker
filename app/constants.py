@@ -3,7 +3,8 @@ DEBUG_MODE  : bool = True
 HOTKEY_ACTION       : str = 'space'
 HOTKEY_PICK_WORM    : str = '2'
 
-WINDOW_COORDINATES  : dict[str, int] = {"top": 0, "left": 200, "width": 600, "height": 400}
+# pixels
+WINDOW_COORDINATES  : dict[str, int] = {"top": 0, "left": 200, "width": 600, "height": 400} 
 
 TEMPLATE_ARROW_BLUE_NAME    : str = "arrow_blue" 
 TEMPLATE_ARROW_YELLOW_NAME  : str = "arrow_yellow" 
@@ -15,7 +16,7 @@ TEMPLATE_ARROW_BLUE_IMAGE_PATH      : str = "templates/arrow_blue.jpg"
 TEMPLATE_ARROW_YELLOW_IMAGE_PATH    : str = "templates/arrow_yellow.jpg"
 TEMPLATE_ARROW_PURPLE_IMAGE_PATH    : str = "templates/arrow_purple.jpg"
 TEMPLATE_FISHING_ROD_IMAGE_PATH     : str = "templates/fishing_rod.jpg"
-TEMPLATE_ICON_IMAGE_PATH            : str = "templates/icon.jpg"
+TEMPLATE_ICON_IMAGE_PATH            : str = "templates/icon2.jpg"
 
 TEMPLATE_ARROW_BLUE_HSV_PARAMETERS    : dict[str, int] = {'hMin': 0, 'sMin': 0, 'vMin': 0, 'hMax': 179, 'sMax': 255, 'vMax': 255, 'sAdd': 0, 'sSub': 0, 'vAdd': 0, 'vSub': 0}
 TEMPLATE_ARROW_YELLOW_HSV_PARAMETERS  : dict[str, int] = {'hMin': 0, 'sMin': 0, 'vMin': 0, 'hMax': 179, 'sMax': 255, 'vMax': 255, 'sAdd': 0, 'sSub': 0, 'vAdd': 0, 'vSub': 0}
@@ -23,13 +24,15 @@ TEMPLATE_ARROW_PURPLE_HSV_PARAMETERS  : dict[str, int] = {'hMin': 0, 'sMin': 0, 
 TEMPLATE_FISHING_ROD_HSV_PARAMETERS   : dict[str, int] = {"hMin": 0, "sMin": 0, "vMin": 0, "hMax": 179, "sMax": 255, "vMax": 255, "sAdd": 0, "sSub": 0, "vAdd": 0, "vSub": 0}
 TEMPLATE_ICON_HSV_PARAMETERS          : dict[str, int] = {'hMin': 0, 'sMin': 0, 'vMin': 0, 'hMax': 179, 'sMax': 255, 'vMax': 255, 'sAdd': 0, 'sSub': 0, 'vAdd': 0, 'vSub': 0}
 
-TEMPLATE_ARROW_BLUE_THRESHOLD     : float = 0.90
+# range between 0.25 - 1.00
+TEMPLATE_ARROW_BLUE_THRESHOLD     : float = 0.90 
 TEMPLATE_ARROW_YELLOW_THRESHOLD   : float = 0.50
 TEMPLATE_ARROW_PURPLE_THRESHOLD   : float = 0.50
-TEMPLATE_FISHING_ROD_THRESHOLD    : float = 0.50
+TEMPLATE_FISHING_ROD_THRESHOLD    : float = 0.25
 TEMPLATE_ICON_THRESHOLD           : float = 0.60
 
-TIMER_PAUSE_WHEN_NEW_ROUND_STARTS       : float = 5.0
+# seconds
+TIMER_PAUSE_WHEN_NEW_ROUND_STARTS       : float = 5.0 
 TIMER_PAUSE_AFTER_WORM_IS_PICKED        : float = 0.5
 TIMER_WAITING_LIMIT_FOR_ICON_TO_APPEAR  : float = 10.0
 TIMER_PAUSE_AFTER_ICON_APPEARS          : float = 2.5
