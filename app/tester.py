@@ -1,7 +1,7 @@
 from app import constants as c
 from app.utils import add_template, make_screenshot, apply_filter_on_image, find_template_on_image, draw_and_show_rectangles, draw_and_save_rectangles, create_gui, set_parameters_on_gui, get_parameters_from_gui, load_image, save_screenshot
 import cv2 as cv
-
+import time
 
 def main() -> None:
     add_template(c.TEMPLATE_ARROW_BLUE_NAME, c.TEMPLATE_ARROW_BLUE_IMAGE_PATH)
