@@ -1,35 +1,48 @@
-DEBUG_MODE  : bool = True
-
-HOTKEY_ACTION       : str = 'space'
-HOTKEY_PICK_WORM    : str = '2'
-
 # pixels
-WINDOW_COORDINATES  : dict[str, int] = {"top": 0, "left": 200, "width": 600, "height": 400} 
+WINDOW_COORDINATES : dict[str, int] = {"top": 0, "left": 100, "width": 500, "height": 400} 
 
-TEMPLATE_ARROW_BLUE_NAME    : str = "arrow_blue" 
-TEMPLATE_ARROW_YELLOW_NAME  : str = "arrow_yellow" 
-TEMPLATE_ARROW_PURPLE_NAME  : str = "arrow_purple" 
-TEMPLATE_FISHING_ROD_NAME   : str = "fishing_rod" 
-TEMPLATE_ICON_NAME          : str = "icon"
+HOTKEY_ACTION    : str = 'space'
+HOTKEY_PICK_WORM : str = '2'
 
-TEMPLATE_ARROW_BLUE_IMAGE_PATH      : str = "templates/arrow_blue.jpg"
-TEMPLATE_ARROW_YELLOW_IMAGE_PATH    : str = "templates/arrow_yellow.jpg"
-TEMPLATE_ARROW_PURPLE_IMAGE_PATH    : str = "templates/arrow_purple.jpg"
+TEMPLATE_ARROW_BLUE_NAME           : str = "arrow_blue" 
+TEMPLATE_ARROW_BLUE_IMAGE_PATH     : str = "templates/arrow_blue.jpg"
+TEMPLATE_ARROW_BLUE_HSV_PARAMETERS : dict[str, int] = {'hMin': 0, 'sMin': 0, 'vMin': 0, 'hMax': 179, 'sMax': 255, 'vMax': 255, 'sAdd': 0, 'sSub': 0, 'vAdd': 0, 'vSub': 0}
+TEMPLATE_ARROW_BLUE_THRESHOLD      : float = 0.25 
+
+TEMPLATE_ARROW_YELLOW_NAME           : str = "arrow_yellow" 
+TEMPLATE_ARROW_YELLOW_IMAGE_PATH     : str = "templates/arrow_yellow.jpg"
+TEMPLATE_ARROW_YELLOW_HSV_PARAMETERS : dict[str, int] = {'hMin': 0, 'sMin': 0, 'vMin': 0, 'hMax': 179, 'sMax': 255, 'vMax': 255, 'sAdd': 0, 'sSub': 0, 'vAdd': 0, 'vSub': 0}
+TEMPLATE_ARROW_YELLOW_THRESHOLD      : float = 0.25
+
+TEMPLATE_ARROW_PURPLE_NAME           : str = "arrow_purple" 
+TEMPLATE_ARROW_PURPLE_IMAGE_PATH     : str = "templates/arrow_purple.jpg"
+TEMPLATE_ARROW_PURPLE_HSV_PARAMETERS : dict[str, int] = {'hMin': 0, 'sMin': 0, 'vMin': 0, 'hMax': 179, 'sMax': 255, 'vMax': 255, 'sAdd': 0, 'sSub': 0, 'vAdd': 0, 'vSub': 0}
+TEMPLATE_ARROW_PURPLE_THRESHOLD      : float = 0.25
+
+TEMPLATE_FISHING_ROD_NAME           : str = "fishing_rod" # ready
 TEMPLATE_FISHING_ROD_IMAGE_PATH     : str = "templates/fishing_rod.jpg"
-TEMPLATE_ICON_IMAGE_PATH            : str = "templates/icon2.jpg"
+TEMPLATE_FISHING_ROD_HSV_PARAMETERS : dict[str, int] = {"hMin": 0, "sMin": 0, "vMin": 0, "hMax": 179, "sMax": 255, "vMax": 255, "sAdd": 0, "sSub": 0, "vAdd": 0, "vSub": 0}
+TEMPLATE_FISHING_ROD_THRESHOLD      : float = 0.70
 
-TEMPLATE_ARROW_BLUE_HSV_PARAMETERS    : dict[str, int] = {'hMin': 0, 'sMin': 0, 'vMin': 0, 'hMax': 179, 'sMax': 255, 'vMax': 255, 'sAdd': 0, 'sSub': 0, 'vAdd': 0, 'vSub': 0}
-TEMPLATE_ARROW_YELLOW_HSV_PARAMETERS  : dict[str, int] = {'hMin': 0, 'sMin': 0, 'vMin': 0, 'hMax': 179, 'sMax': 255, 'vMax': 255, 'sAdd': 0, 'sSub': 0, 'vAdd': 0, 'vSub': 0}
-TEMPLATE_ARROW_PURPLE_HSV_PARAMETERS  : dict[str, int] = {'hMin': 0, 'sMin': 0, 'vMin': 0, 'hMax': 179, 'sMax': 255, 'vMax': 255, 'sAdd': 0, 'sSub': 0, 'vAdd': 0, 'vSub': 0}
-TEMPLATE_FISHING_ROD_HSV_PARAMETERS   : dict[str, int] = {"hMin": 0, "sMin": 0, "vMin": 0, "hMax": 179, "sMax": 255, "vMax": 255, "sAdd": 0, "sSub": 0, "vAdd": 0, "vSub": 0}
-TEMPLATE_ICON_HSV_PARAMETERS          : dict[str, int] = {'hMin': 0, 'sMin': 0, 'vMin': 0, 'hMax': 179, 'sMax': 255, 'vMax': 255, 'sAdd': 0, 'sSub': 0, 'vAdd': 0, 'vSub': 0}
+TEMPLATE_ICON_NAME           : str = "icon" # ready
+TEMPLATE_ICON_IMAGE_PATH     : str = "templates/icon.jpg"
+TEMPLATE_ICON_HSV_PARAMETERS : dict[str, int] = {'hMin': 66, 'sMin': 58, 'vMin': 91, 'hMax': 120, 'sMax': 255, 'vMax': 255, 'sAdd': 0, 'sSub': 0, 'vAdd': 0, 'vSub': 0}
+TEMPLATE_ICON_THRESHOLD      : float = 0.60
 
-# range between 0.25 - 1.00
-TEMPLATE_ARROW_BLUE_THRESHOLD     : float = 0.90 
-TEMPLATE_ARROW_YELLOW_THRESHOLD   : float = 0.50
-TEMPLATE_ARROW_PURPLE_THRESHOLD   : float = 0.50
-TEMPLATE_FISHING_ROD_THRESHOLD    : float = 0.25
-TEMPLATE_ICON_THRESHOLD           : float = 0.60
+### --- place to configure your tester --- ###
+
+# flag whether to use saved image instead of real screenshot. 
+TESTER_USE_MOCKED_SCREENSHOT  : bool = False
+# the path to saved image to use instead of real screenshot. Has effect only if the flag above is set to True. 
+TESTER_MOCKED_SCREENSHOT_PATH : str = 'mocks/test_arrow_all.jpg' 
+# the template you want to use for object detection
+TESTER_TEMPLATE_NAME = TEMPLATE_FISHING_ROD_NAME
+# the hsv parameters you want to use for object detecion
+TESTER_TEMPLATE_HSV_PARAMETERS = TEMPLATE_FISHING_ROD_HSV_PARAMETERS
+# the threshold you want to use for object detecion
+TESTER_TEMPLATE_THRESHOLD = TEMPLATE_FISHING_ROD_THRESHOLD
+
+# ---------------------------------------- ###
 
 # seconds
 TIMER_PAUSE_WHEN_NEW_ROUND_STARTS       : float = 5.0 
@@ -45,16 +58,16 @@ TIMER_INTERVAL_WHEN_FISHING_BLUE_MODE   : float = 0.0
 TIMER_INTERVAL_WHEN_FISHING_PURPLE_MODE : float = 0.0
 TIMER_INTERVAL_WHEN_FISHING_YELLOW_MODE : float = 0.0
 
-STEP_1          : str = '1' 
-STEP_2          : str = '2'
-STEP_3          : str = '3'
-STEP_4          : str = '4'
-STEP_5          : str = '5'
-STEP_6          : str = '6'
-STEP_7_BLUE     : str = '7_BLUE'
-STEP_7_YELLOW   : str = '7_YELLOW'
-STEP_7_PURPLE   : str = '7_PURPLE'
-STEP_8          : str = '8'
+STEP_1        : str = '1' 
+STEP_2        : str = '2'
+STEP_3        : str = '3'
+STEP_4        : str = '4'
+STEP_5        : str = '5'
+STEP_6        : str = '6'
+STEP_7_BLUE   : str = '7_BLUE'
+STEP_7_YELLOW : str = '7_YELLOW'
+STEP_7_PURPLE : str = '7_PURPLE'
+STEP_8        : str = '8'
 
 
 
