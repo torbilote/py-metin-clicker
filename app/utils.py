@@ -29,8 +29,8 @@ def find_template_on_image(template_name: str, base_image: NDArray | MatLike, th
 def draw_and_show_rectangles(base_image: NDArray | MatLike, coordinates: Sequence[Rect]) -> None:
     Drawer.draw_and_show_rectangles(base_image, coordinates)
 
-def draw_and_save_rectangles(base_image: NDArray | MatLike, coordinates: Sequence[Rect], file_path: str) -> None:
-    Drawer.draw_and_save_rectangles(base_image, coordinates, file_path)
+def draw_and_save_rectangles(base_image: NDArray | MatLike, coordinates: Sequence[Rect], folder_path: str) -> None:
+    Drawer.draw_and_save_rectangles(base_image, coordinates, folder_path)
 
 def create_gui() -> None:
     GUI.create_gui()

@@ -20,16 +20,16 @@ class Drawer:
         cv.imshow('Screenshot', base_image)
 
     @classmethod
-    def draw_and_save_rectangles(cls, base_image: NDArray | MatLike, coordinates: Sequence[Rect], file_path: str) -> None:
-        file_path = file_path.replace('.jpg', f'_raw_{str(random.choice(range(1, 21, 1)))}.jpg')
-        cv.imwrite(file_path, base_image)
+    def draw_and_save_rectangles(cls, base_image: NDArray | MatLike, coordinates: Sequence[Rect], file_prefix: str) -> None:
+        to_save: bool = random.choice(range(100)) < 20 # save 20% of made screenshots
+
+        path = f'bot_screenshots/{file_prefix}_{str(uuid4())}.jpg'
 
         for (x, y, w, h) in coordinates:
             top_left = (x, y)
             bottom_right = (x + w, y + h)
             cv.rectangle(base_image, top_left, bottom_right, cls.line_color, lineType=cls.line_type)
         
-        if len(coordinates) > 0:
-            file_path = file_path.replace('.jpg', f'_detected_{str(random.choice(range(1, 21, 1)))}.jpg')
-            cv.imwrite(file_path, base_image)
+        if len(coordinates) > 0 and to_save:
+            cv.imwrite(path, base_image)
 

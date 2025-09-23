@@ -24,7 +24,9 @@ def main() -> None:
         screenshot_hsv = apply_filter_on_image(screenshot_raw, fresh_hsv_parameters)
         findings = find_template_on_image(c.TESTER_TEMPLATE_NAME, screenshot_hsv, **fresh_threshold)
         draw_and_show_rectangles(screenshot_hsv, findings)
-        draw_and_save_rectangles(screenshot_hsv, findings, f'bot_screenshots/{c.TESTER_TEMPLATE_NAME}.jpg')
+
+        if not c.TESTER_USE_MOCKED_SCREENSHOT:
+            draw_and_save_rectangles(screenshot_hsv, findings, folder_path='bot_screenshots')
 
         if cv.waitKey(1) == ord('q'):
             cv.destroyAllWindows()
