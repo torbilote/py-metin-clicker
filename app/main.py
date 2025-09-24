@@ -1,8 +1,11 @@
 from app import constants as c
-from app.utils import add_template,apply_filter_on_image,draw_rectangles,find_template_on_image,has_object_been_found,has_time_ended,make_screenshot,press_hotkey,reset_timer,save_screenshot,set_timer,wait_seconds
+from app.utils import add_template,apply_filter_on_image,show_rectangles,find_template_on_image,has_object_been_found,has_time_ended,make_screenshot,press_hotkey,reset_timer,set_timer,wait_seconds, show_rectangles, save_rectangles
 import cv2 as cv
+from loguru import logger as log
 
 def main() -> None:
+    log.info(f'Started bot.')
+
     add_template(c.TEMPLATE_ARROW_BLUE_NAME, c.TEMPLATE_ARROW_BLUE_IMAGE_PATH)
     add_template(c.TEMPLATE_ARROW_PURPLE_NAME, c.TEMPLATE_ARROW_PURPLE_IMAGE_PATH)
     add_template(c.TEMPLATE_ARROW_YELLOW_NAME, c.TEMPLATE_ARROW_YELLOW_IMAGE_PATH)
@@ -16,26 +19,39 @@ def main() -> None:
     start_time_7: float = 0.0
 
     while True:
+
         if cv.waitKey(1) == ord('q'):
             cv.destroyAllWindows()
+            log.info(f'Finished bot.')
             break
-
+        
         if step == c.STEP_1:
+            log.info(f'Started step {step}.')
+
             wait_seconds(c.TIMER_PAUSE_WHEN_NEW_ROUND_STARTS)
             step = c.STEP_2
 
+            log.info(f'Completed step.')
+
         if step == c.STEP_2:
+            log.info(f'Started step {step}.')
+
             press_hotkey(c.HOTKEY_PICK_WORM)
             wait_seconds(c.TIMER_PAUSE_AFTER_WORM_IS_PICKED)
             press_hotkey(c.HOTKEY_ACTION)
             step = c.STEP_3
 
+            log.info(f'Completed step.')
+
         if step == c.STEP_3:
+            log.info(f'Started step {step}.')
+
             start_time_3 = set_timer(start_time_3)
             screenshot_raw = make_screenshot(c.WINDOW_COORDINATES)
             screenshot_hsv = apply_filter_on_image(screenshot_raw, c.TEMPLATE_ICON_HSV_PARAMETERS)
             findings = find_template_on_image(c.TEMPLATE_ICON_NAME, screenshot_hsv, c.TEMPLATE_ICON_THRESHOLD)
-            draw_rectangles(screenshot_hsv, findings)
+            show_rectangles(screenshot_hsv, findings)
+            save_rectangles(screenshot_hsv, findings, c.TEMPLATE_ICON_NAME)
 
             if has_object_been_found(findings):
                 wait_seconds(c.TIMER_PAUSE_AFTER_ICON_APPEARS)
@@ -47,16 +63,25 @@ def main() -> None:
                 start_time_3 = reset_timer()
                 step = c.STEP_1
 
+            log.info(f'Completed step.')
+
         if step == c.STEP_4:
+            log.info(f'Started step {step}.')
+
             press_hotkey(c.HOTKEY_ACTION)
             step = c.STEP_5
 
+            log.info(f'Completed step.')
+
         if step == c.STEP_5:            
+            log.info(f'Started step {step}.')
+
             wait_seconds(c.TIMER_PAUSE_BEFORE_FISHING_ROD_APPEARS)
             screenshot_raw = make_screenshot(c.WINDOW_COORDINATES)
             screenshot_hsv = apply_filter_on_image(screenshot_raw, c.TEMPLATE_FISHING_ROD_HSV_PARAMETERS)
             findings = find_template_on_image(c.TEMPLATE_FISHING_ROD_NAME, screenshot_hsv, c.TEMPLATE_FISHING_ROD_THRESHOLD)
-            draw_rectangles(screenshot_hsv, findings)
+            show_rectangles(screenshot_hsv, findings)
+            save_rectangles(screenshot_hsv, findings, c.TEMPLATE_FISHING_ROD_NAME)
 
             if has_object_been_found(findings):
                 wait_seconds(c.TIMER_PAUSE_AFTER_FISHING_ROD_APPEARS)
@@ -64,31 +89,38 @@ def main() -> None:
             else:
                 step = c.STEP_1
 
+            log.info(f'Completed step.')
+
         if step == c.STEP_6:
+            log.info(f'Started step {step}.')
+
             start_time_6 = set_timer(start_time_6)
             press_hotkey(c.HOTKEY_ACTION)
             screenshot_raw = make_screenshot(c.WINDOW_COORDINATES)
             
-            screenshot_hsv_arrow_blue = apply_filter_on_image(screenshot_raw, c.TEMPLATE_ARROW_BLUE_HSV_PARAMETERS)
-            findings_arrow_blue = find_template_on_image(c.TEMPLATE_ARROW_BLUE_NAME, screenshot_hsv_arrow_blue, c.TEMPLATE_ARROW_BLUE_THRESHOLD)
-            draw_rectangles(screenshot_hsv, findings_arrow_blue)
-            if has_object_been_found(findings_arrow_blue):
+            screenshot_hsv = apply_filter_on_image(screenshot_raw, c.TEMPLATE_ARROW_BLUE_HSV_PARAMETERS)
+            findings = find_template_on_image(c.TEMPLATE_ARROW_BLUE_NAME, screenshot_hsv, c.TEMPLATE_ARROW_BLUE_THRESHOLD)
+            show_rectangles(screenshot_hsv, findings)
+            save_rectangles(screenshot_hsv, findings, c.TEMPLATE_ARROW_BLUE_NAME)
+            if has_object_been_found(findings):
                 step = c.STEP_7_BLUE
                 start_time_6 = reset_timer()
                 continue
             
-            screenshot_hsv_arrow_purple = apply_filter_on_image(screenshot_raw, c.TEMPLATE_ARROW_PURPLE_HSV_PARAMETERS)
-            findings_arrow_purple = find_template_on_image(c.TEMPLATE_ARROW_PURPLE_NAME, screenshot_hsv_arrow_purple, c.TEMPLATE_ARROW_PURPLE_THRESHOLD)
-            draw_rectangles(screenshot_hsv, findings_arrow_purple)
-            if has_object_been_found(findings_arrow_purple):
+            screenshot_hsv = apply_filter_on_image(screenshot_raw, c.TEMPLATE_ARROW_PURPLE_HSV_PARAMETERS)
+            findings = find_template_on_image(c.TEMPLATE_ARROW_PURPLE_NAME, screenshot_hsv, c.TEMPLATE_ARROW_PURPLE_THRESHOLD)
+            show_rectangles(screenshot_hsv, findings)
+            save_rectangles(screenshot_hsv, findings, c.TEMPLATE_ARROW_PURPLE_NAME)
+            if has_object_been_found(findings):
                 step = c.STEP_7_PURPLE
                 start_time_6 = reset_timer()
                 continue
 
-            screenshot_hsv_arrow_yellow = apply_filter_on_image(screenshot_raw, c.TEMPLATE_ARROW_YELLOW_HSV_PARAMETERS)
-            findings_arrow_yellow = find_template_on_image(c.TEMPLATE_ARROW_YELLOW_NAME, screenshot_hsv_arrow_yellow, c.TEMPLATE_ARROW_YELLOW_THRESHOLD)
-            draw_rectangles(screenshot_hsv, findings_arrow_yellow)
-            if has_object_been_found(findings_arrow_yellow):
+            screenshot_hsv = apply_filter_on_image(screenshot_raw, c.TEMPLATE_ARROW_YELLOW_HSV_PARAMETERS)
+            findings = find_template_on_image(c.TEMPLATE_ARROW_YELLOW_NAME, screenshot_hsv, c.TEMPLATE_ARROW_YELLOW_THRESHOLD)
+            show_rectangles(screenshot_hsv, findings)
+            save_rectangles(screenshot_hsv, findings, c.TEMPLATE_ARROW_YELLOW_NAME)
+            if has_object_been_found(findings):
                 step = c.STEP_7_YELLOW
                 start_time_6 = reset_timer()
                 continue
@@ -98,11 +130,15 @@ def main() -> None:
                 continue
             else:
                 step = c.STEP_1
+            
+            log.info(f'Completed step.')
 
         if step in (c.STEP_7_BLUE, c.STEP_7_PURPLE, c.STEP_7_YELLOW):
+            log.info(f'Started step {step}.')
+
             start_time_7 = set_timer(start_time_7)
 
-            if has_time_ended(start_time_7, c.TIMER_WAITING_LIMIT_FOR_ACTIVE_MODE):
+            if not has_time_ended(start_time_7, c.TIMER_WAITING_LIMIT_FOR_ACTIVE_MODE):
                 press_hotkey(c.HOTKEY_ACTION)
 
                 if step == c.STEP_7_BLUE:
@@ -111,17 +147,21 @@ def main() -> None:
                     wait_seconds(c.TIMER_INTERVAL_WHEN_FISHING_PURPLE_MODE)
                 elif step == c.STEP_7_YELLOW:
                     wait_seconds(c.TIMER_INTERVAL_WHEN_FISHING_YELLOW_MODE)
-
                 continue
             else:
                 step = c.STEP_8
                 start_time_7 = reset_timer()
+            
+            log.info(f'Completed step.')
 
         if step == c.STEP_8:
+            log.info(f'Started step {step}.')
+
             screenshot_raw = make_screenshot(c.WINDOW_COORDINATES)
             screenshot_hsv = apply_filter_on_image(screenshot_raw, c.TEMPLATE_FISHING_ROD_HSV_PARAMETERS)
             findings = find_template_on_image(c.TEMPLATE_FISHING_ROD_NAME, screenshot_hsv, c.TEMPLATE_FISHING_ROD_THRESHOLD)
-            draw_rectangles(screenshot_hsv, findings)
+            show_rectangles(screenshot_hsv, findings)
+            save_rectangles(screenshot_hsv, findings, c.TEMPLATE_FISHING_ROD_NAME)
 
             if has_object_been_found(findings):
                 press_hotkey(c.HOTKEY_ACTION)
@@ -130,6 +170,7 @@ def main() -> None:
             else:
                 step = c.STEP_1
 
+            log.info(f'Completed step.')
 
 if __name__ == "__main__":
     main()

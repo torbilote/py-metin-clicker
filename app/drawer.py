@@ -11,7 +11,7 @@ class Drawer:
 
     
     @classmethod
-    def draw_and_show_rectangles(cls, base_image: NDArray | MatLike, coordinates: Sequence[Rect]) -> None:
+    def show_rectangles(cls, base_image: NDArray | MatLike, coordinates: Sequence[Rect]) -> None:
         for (x, y, w, h) in coordinates:
             top_left = (x, y)
             bottom_right = (x + w, y + h)
@@ -20,7 +20,7 @@ class Drawer:
         cv.imshow('Screenshot', base_image)
 
     @classmethod
-    def draw_and_save_rectangles(cls, base_image: NDArray | MatLike, coordinates: Sequence[Rect], file_prefix: str) -> None:
+    def save_rectangles(cls, base_image: NDArray | MatLike, coordinates: Sequence[Rect], file_prefix: str) -> None:
         to_save: bool = random.choice(range(100)) < 20 # save 20% of made screenshots
 
         path = f'bot_screenshots/{file_prefix}_{str(uuid4())}.jpg'

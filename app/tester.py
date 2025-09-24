@@ -1,5 +1,5 @@
 from app import constants as c
-from app.utils import add_template, make_screenshot, apply_filter_on_image, find_template_on_image, draw_and_show_rectangles, draw_and_save_rectangles, create_gui, set_parameters_on_gui, get_parameters_from_gui, load_image, save_screenshot
+from app.utils import add_template, make_screenshot, apply_filter_on_image, find_template_on_image, show_rectangles, save_rectangles, create_gui, set_parameters_on_gui, get_parameters_from_gui, load_image
 import cv2 as cv
 import time
 
@@ -23,10 +23,10 @@ def main() -> None:
         fresh_threshold = get_parameters_from_gui('threshold')
         screenshot_hsv = apply_filter_on_image(screenshot_raw, fresh_hsv_parameters)
         findings = find_template_on_image(c.TESTER_TEMPLATE_NAME, screenshot_hsv, **fresh_threshold)
-        draw_and_show_rectangles(screenshot_hsv, findings)
+        show_rectangles(screenshot_hsv, findings)
 
         if not c.TESTER_USE_MOCKED_SCREENSHOT:
-            draw_and_save_rectangles(screenshot_hsv, findings, folder_path='bot_screenshots')
+            save_rectangles(screenshot_hsv, findings, folder_path='bot_screenshots')
 
         if cv.waitKey(1) == ord('q'):
             cv.destroyAllWindows()
